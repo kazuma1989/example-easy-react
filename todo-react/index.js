@@ -1,58 +1,91 @@
 // @ts-check
 
-/** @type {HTMLElement} */
-const list = document.querySelector("#list");
+import {
+  html,
+  render,
+  useState,
+  useEffect,
+  // @ts-ignore
+} from "https://unpkg.com/htm/preact/standalone.module.js";
 
-[
-  {
-    done: false,
-    text: "fix the wall",
-  },
-  {
-    done: false,
-    text: "fix the wall",
-  },
-].forEach((i) => {
-  addItem(list, i.text);
-});
+function App() {
+  const [todoText, setTodoText] = useState("");
+  const [todoList, setTodoList] = useState([
+    {
+      done: false,
+      text: "fix the wall",
+    },
+    {
+      done: true,
+      text: "broke the wall",
+    },
+  ]);
 
-/** @type {HTMLTextAreaElement} */
-const input = document.querySelector("#input");
-/** @type {HTMLButtonElement} */
-const submit = document.querySelector("#button");
+  const addTodo = (todo) => {
+    setTodoList((list) => [todo, ...list]);
+  };
+  const toggleDone = (index) => {
+    setTodoList((list) =>
+      list.map((todo, i) => {
+        if (i !== index) {
+          return todo;
+        }
 
-input.addEventListener("keydown", (ev) => {
-  // Command + Enter のみ処理
-  if (!(ev.metaKey && ev.code === "Enter")) return;
+        return {
+          ...todo,
+          done: !todo.done,
+        };
+      })
+    );
+  };
 
-  submit.click();
-});
+  return html`
+    <h1>TODO list (React)</h1>
 
-submit.addEventListener("click", () => {
-  if (!input.value) return;
+    <textarea
+      rows="3"
+      autofocus
+      value=${todoText}
+      onInput=${(e) => setTodoText(e.currentTarget.value)}
+    ></textarea>
+    <p>
+      <button
+        type="button"
+        onClick=${() => {
+          if (!todoText) return;
 
-  addItem(list, input.value);
+          addTodo({ done: false, text: todoText });
+          setTodoText("");
+        }}
+      >
+        Add
+      </button>
+    </p>
 
-  input.value = "";
-});
-
-/**
- * @param {HTMLElement} list
- * @param {string} text
- */
-function addItem(list, text) {
-  const item = document.createElement("div");
-  item.innerHTML = `<label style="font-weight: normal; white-space: pre-wrap;"><input type="checkbox" /> ${text}</label>`;
-
-  /** @type {HTMLLabelElement} */
-  const label = item.querySelector("label");
-  /** @type {HTMLInputElement} */
-  const checkbox = item.querySelector("input[type=checkbox]");
-
-  checkbox.addEventListener("change", () => {
-    label.style.textDecoration = checkbox.checked ? "line-through" : "";
-    label.style.opacity = checkbox.checked ? "0.5" : "";
-  });
-
-  list.prepend(item);
+    <div>
+      ${todoList.map(
+        ({ done, text }, i) =>
+          html`
+            <label
+              style=${{
+                fontWeight: "normal",
+                whiteSpace: "pre-wrap",
+                textDecoration: done ? "line-through" : undefined,
+                opacity: done ? 0.5 : undefined,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked=${done}
+                onChange=${() => {
+                  toggleDone(i);
+                }}
+              />${" "}${text}
+            </label>
+          `
+      )}
+    </div>
+  `;
 }
+
+render(html`<${App} />`, document.body);
