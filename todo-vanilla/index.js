@@ -1,5 +1,6 @@
 // @ts-check
 
+/** @type {HTMLDivElement} */
 const list = document.querySelector("#list");
 
 [
@@ -12,23 +13,28 @@ const list = document.querySelector("#list");
     text: "fix the wall",
   },
 ].forEach((i) => {
-  const li = document.createElement("div");
-  li.innerHTML = `<label><input type="checkbox" /> ${i.text}</label>`;
+  const item = document.createElement("div");
+  item.innerHTML = `<label><input type="checkbox" /> ${i.text}</label>`;
 
-  list.appendChild(li);
+  list.appendChild(item);
 });
 
-const form = document.querySelector("#form");
+/** @type {HTMLTextAreaElement} */
 const input = document.querySelector("#input");
 
-form.addEventListener("submit", (ev) => {
-  ev.preventDefault();
+input.addEventListener(
+  "keydown",
+  /** @param {KeyboardEvent} ev */
+  (ev) => {
+    if (!(ev.metaKey && ev.code === "Enter")) return;
 
-  if (!input.value) return;
+    // Command + Enter
+    if (!input.value) return;
 
-  const li = document.createElement("div");
-  li.innerHTML = `<label><input type="checkbox" /> ${input.value}</label>`;
+    const item = document.createElement("div");
+    item.innerHTML = `<label style="white-space: pre-wrap;"><input type="checkbox" /> ${input.value}</label>`;
 
-  list.prepend(li);
-  input.value = "";
-});
+    list.prepend(item);
+    input.value = "";
+  }
+);
