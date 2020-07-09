@@ -12,8 +12,8 @@ const list = document.querySelector("#list");
     done: false,
     text: "fix the wall",
   },
-].forEach((i) => {
-  addItem(list, i.text);
+].forEach((todo) => {
+  addItem(list, todo);
 });
 
 /** @type {HTMLTextAreaElement} */
@@ -31,16 +31,16 @@ input.addEventListener("keydown", (ev) => {
 submit.addEventListener("click", () => {
   if (!input.value) return;
 
-  addItem(list, input.value);
+  addItem(list, { done: false, text: input.value });
 
   input.value = "";
 });
 
 /**
  * @param {HTMLElement} list
- * @param {string} text
+ * @param {{ done: boolean; text: string }} _
  */
-function addItem(list, text) {
+function addItem(list, { text, done }) {
   const item = document.createElement("div");
   item.innerHTML = `<label style="font-weight: normal; white-space: pre-wrap;"><input type="checkbox" /> ${text}</label>`;
 
@@ -49,10 +49,14 @@ function addItem(list, text) {
   /** @type {HTMLInputElement} */
   const checkbox = item.querySelector("input[type=checkbox]");
 
-  checkbox.addEventListener("change", () => {
+  const onChange = () => {
     label.style.textDecoration = checkbox.checked ? "line-through" : "";
     label.style.opacity = checkbox.checked ? "0.5" : "";
-  });
+  };
+  checkbox.addEventListener("change", onChange);
+
+  checkbox.checked = done;
+  onChange();
 
   list.prepend(item);
 }
