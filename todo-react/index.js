@@ -21,6 +21,8 @@ function App() {
     },
   ]);
 
+  console.log({ todoText, todoList });
+
   const addTodo = (todo) => {
     setTodoList((list) => [todo, ...list]);
   };
@@ -39,6 +41,13 @@ function App() {
     );
   };
 
+  const submitTodo = () => {
+    if (!todoText) return;
+
+    addTodo({ done: false, text: todoText });
+    setTodoText("");
+  };
+
   return html`
     <h1>TODO list (React)</h1>
 
@@ -47,17 +56,15 @@ function App() {
       autofocus
       value=${todoText}
       onInput=${(e) => setTodoText(e.currentTarget.value)}
+      onKeydown=${(e) => {
+        // Command + Enter のみ処理
+        if (!(e.metaKey && e.code === "Enter")) return;
+
+        submitTodo();
+      }}
     ></textarea>
     <p>
-      <button
-        type="button"
-        onClick=${() => {
-          if (!todoText) return;
-
-          addTodo({ done: false, text: todoText });
-          setTodoText("");
-        }}
-      >
+      <button type="button" onClick=${submitTodo}>
         Add
       </button>
     </p>
