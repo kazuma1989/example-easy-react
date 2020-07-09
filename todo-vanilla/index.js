@@ -13,10 +13,7 @@ const list = document.querySelector("#list");
     text: "fix the wall",
   },
 ].forEach((i) => {
-  const item = document.createElement("div");
-  item.innerHTML = `<label style="white-space: pre-wrap;"><input type="checkbox" /> ${i.text}</label>`;
-
-  list.appendChild(item);
+  addItem(list, i.text);
 });
 
 /** @type {HTMLTextAreaElement} */
@@ -28,9 +25,25 @@ input.addEventListener("keydown", (ev) => {
 
   if (!input.value) return;
 
-  const item = document.createElement("div");
-  item.innerHTML = `<label style="white-space: pre-wrap;"><input type="checkbox" /> ${input.value}</label>`;
+  addItem(list, input.value);
 
-  list.prepend(item);
   input.value = "";
 });
+
+/**
+ * @param {HTMLElement} list
+ * @param {string} text
+ */
+function addItem(list, text) {
+  const item = document.createElement("div");
+  item.innerHTML = `<label style="font-weight: normal; white-space: pre-wrap;"><input type="checkbox" /> ${text}</label>`;
+
+  const label = item.querySelector("label");
+  const checkbox = item.querySelector("input");
+  checkbox.addEventListener("change", () => {
+    label.style.textDecoration = checkbox.checked ? "line-through" : "";
+    label.style.opacity = checkbox.checked ? "0.5" : "";
+  });
+
+  list.prepend(item);
+}
