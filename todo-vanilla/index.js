@@ -1,6 +1,6 @@
 // @ts-check
 
-const list = document.getElementById("list");
+const list = document.querySelector("#list");
 
 [
   {
@@ -16,4 +16,19 @@ const list = document.getElementById("list");
   li.innerHTML = `<label><input type="checkbox" /> ${i.text}</label>`;
 
   list.appendChild(li);
+});
+
+const form = document.querySelector("#form");
+const input = document.querySelector("#input");
+
+form.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+
+  if (!input.value) return;
+
+  const li = document.createElement("div");
+  li.innerHTML = `<label><input type="checkbox" /> ${input.value}</label>`;
+
+  list.prepend(li);
+  input.value = "";
 });
