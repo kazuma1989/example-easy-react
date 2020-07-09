@@ -20,7 +20,12 @@
   <body>
     <h1>TODO list</h1>
 
-    <textarea id="input" rows="3" autofocus></textarea>
+    <form id="form" onsubmit="event.preventDefault()">
+      <textarea id="input" rows="3" autofocus></textarea>
+      <p>
+        <button id="button" type="submit">Submit</button>
+      </p>
+    </form>
 
     <div id="list"></div>
   </body>

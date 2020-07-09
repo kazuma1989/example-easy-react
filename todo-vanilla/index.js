@@ -1,6 +1,6 @@
 // @ts-check
 
-/** @type {HTMLDivElement} */
+/** @type {HTMLElement} */
 const list = document.querySelector("#list");
 
 [
@@ -18,11 +18,17 @@ const list = document.querySelector("#list");
 
 /** @type {HTMLTextAreaElement} */
 const input = document.querySelector("#input");
+/** @type {HTMLButtonElement} */
+const submit = document.querySelector("#button");
 
 input.addEventListener("keydown", (ev) => {
   // Command + Enter のみ処理
   if (!(ev.metaKey && ev.code === "Enter")) return;
 
+  submit.click();
+});
+
+submit.addEventListener("click", () => {
   if (!input.value) return;
 
   addItem(list, input.value);
@@ -38,8 +44,11 @@ function addItem(list, text) {
   const item = document.createElement("div");
   item.innerHTML = `<label style="font-weight: normal; white-space: pre-wrap;"><input type="checkbox" /> ${text}</label>`;
 
+  /** @type {HTMLLabelElement} */
   const label = item.querySelector("label");
-  const checkbox = item.querySelector("input");
+  /** @type {HTMLInputElement} */
+  const checkbox = item.querySelector("input[type=checkbox]");
+
   checkbox.addEventListener("change", () => {
     label.style.textDecoration = checkbox.checked ? "line-through" : "";
     label.style.opacity = checkbox.checked ? "0.5" : "";
