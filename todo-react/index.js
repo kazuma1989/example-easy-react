@@ -19,7 +19,7 @@ import { css, cx } from "https://cdn.pika.dev/emotion";
  * @typedef {object} Todo
  * @property {boolean} done
  * @property {string} text
- * @property {number} createdAt
+ * @property {string} createdAt
  */
 
 function App() {
@@ -34,12 +34,7 @@ function App() {
     fetch("/db.json")
       .then((r) => r.json())
       .then(({ todos }) => {
-        setTodoList(
-          todos.map(({ created, ...todo }) => ({
-            ...todo,
-            createdAt: Date.parse(created),
-          }))
-        );
+        setTodoList(todos);
       });
   }, []);
 
@@ -74,7 +69,7 @@ function App() {
     addTodo({
       done: false,
       text: todoText,
-      createdAt: Date.now(),
+      createdAt: new Date().toISOString(),
     });
     setTodoText("");
   };
@@ -108,7 +103,7 @@ function App() {
         onClick=${(e) => {
           e.preventDefault();
 
-          sortTodo((t1, t2) => -t1.createdAt + t2.createdAt);
+          sortTodo((t1, t2) => -t1.createdAt.localeCompare(t2.createdAt));
         }}
         >Created</a
       >${" | "}

@@ -3,6 +3,13 @@
 // @ts-ignore
 import { css, cx } from "https://cdn.pika.dev/emotion";
 
+/**
+ * @typedef {object} Todo
+ * @property {boolean} done
+ * @property {string} text
+ * @property {string} createdAt
+ */
+
 document.body.innerHTML = `
   <h1>TODO list (vanilla)</h1>
 
@@ -48,7 +55,7 @@ const submitTodo = () => {
   prependItem(todoList, {
     done: false,
     text: inputArea.value,
-    created: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
   });
 
   inputArea.value = "";
@@ -69,7 +76,7 @@ orderByCreated.addEventListener("click", (e) => {
 
   sortList(
     todoList,
-    (t1, t2) => -parseInt(t1.dataset.createdAt) + parseInt(t2.dataset.createdAt)
+    (t1, t2) => -t1.dataset.createdAt?.localeCompare(t2.dataset.createdAt)
   );
 });
 
@@ -81,12 +88,12 @@ orderByText.addEventListener("click", (e) => {
 
 /**
  * @param {HTMLElement} list
- * @param {{ done: boolean; text: string; created: string }} _
+ * @param {Todo} todo
  */
-function prependItem(list, { text, done, created }) {
+function prependItem(list, { text, done, createdAt }) {
   const item = document.createElement("label");
   item.innerHTML = `<input type="checkbox" /> ${text}`;
-  item.dataset.createdAt = Date.parse(created).toString();
+  item.dataset.createdAt = createdAt;
 
   /** @type {HTMLInputElement} */
   const checkbox = item.querySelector("input[type=checkbox]");
