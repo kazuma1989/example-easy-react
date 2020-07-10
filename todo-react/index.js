@@ -48,6 +48,11 @@ function App() {
     setTodoList((list) => [todo, ...list]);
   };
 
+  /** @param {(t1: Todo, t2: Todo) => number} compareFn */
+  const sortTodo = (compareFn) => {
+    setTodoList((list) => [...list].sort(compareFn));
+  };
+
   /** @param {number} index */
   const toggleDone = (index) => {
     setTodoList((list) =>
@@ -103,9 +108,7 @@ function App() {
         onClick=${(e) => {
           e.preventDefault();
 
-          setTodoList((list) =>
-            [...list].sort((t1, t2) => -t1.createdAt + t2.createdAt)
-          );
+          sortTodo((t1, t2) => -t1.createdAt + t2.createdAt);
         }}
         >Created</a
       >${" | "}
@@ -114,9 +117,7 @@ function App() {
         onClick=${(e) => {
           e.preventDefault();
 
-          setTodoList((list) =>
-            [...list].sort((t1, t2) => t1.text.localeCompare(t2.text))
-          );
+          sortTodo((t1, t2) => t1.text.localeCompare(t2.text));
         }}
         >Text</a
       >

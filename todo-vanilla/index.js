@@ -15,6 +15,7 @@ document.body.innerHTML = `
     Order by: <a id="order-by-created" href="#">Created</a> |
     <a id="order-by-text" href="#">Text</a>
   </p>
+
   <div id="list"></div>
 `;
 
@@ -66,34 +67,16 @@ fetch("/db.json")
 orderByCreated.addEventListener("click", (e) => {
   e.preventDefault();
 
-  [...todoList.children]
-    .sort(
-      /**
-       * @param {HTMLElement} t1
-       * @param {HTMLElement} t2
-       */
-      (t1, t2) =>
-        -parseInt(t1.dataset.createdAt) + parseInt(t2.dataset.createdAt)
-    )
-    .forEach((todo) => {
-      todoList.appendChild(todo);
-    });
+  sortList(
+    todoList,
+    (t1, t2) => -parseInt(t1.dataset.createdAt) + parseInt(t2.dataset.createdAt)
+  );
 });
 
 orderByText.addEventListener("click", (e) => {
   e.preventDefault();
 
-  [...todoList.children]
-    .sort(
-      /**
-       * @param {HTMLElement} t1
-       * @param {HTMLElement} t2
-       */
-      (t1, t2) => t1.textContent.localeCompare(t2.textContent)
-    )
-    .forEach((todo) => {
-      todoList.appendChild(todo);
-    });
+  sortList(todoList, (t1, t2) => t1.textContent.localeCompare(t2.textContent));
 });
 
 /**
@@ -127,4 +110,14 @@ function prependItem(list, { text, done, created }) {
   onChange();
 
   list.prepend(item);
+}
+
+/**
+ * @param {HTMLElement} list
+ * @param {(e1: HTMLElement, e2: HTMLElement) => number} compareFn
+ */
+function sortList(list, compareFn) {
+  [...list.children].sort(compareFn).forEach((e) => {
+    list.appendChild(e);
+  });
 }
