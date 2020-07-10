@@ -10,8 +10,22 @@ import {
 // @ts-ignore
 import { css, cx } from "https://cdn.pika.dev/emotion";
 
+/**
+ * @template T
+ * @typedef {[T, (action: T | ((v: T) => T)) => void]} UseState<T>
+ */
+
+/**
+ * @typedef {object} Todo
+ * @property {boolean} done
+ * @property {string} text
+ * @property {number} createdAt
+ */
+
 function App() {
+  /** @type {UseState<string>} */
   const [todoText, setTodoText] = useState("");
+  /** @type {UseState<Todo[]>} */
   const [todoList, setTodoList] = useState([]);
 
   console.log({ todoText, todoList });
@@ -20,13 +34,21 @@ function App() {
     fetch("/db.json")
       .then((r) => r.json())
       .then(({ todos }) => {
-        setTodoList(todos);
+        setTodoList(
+          todos.map(({ created, ...todo }) => ({
+            ...todo,
+            createdAt: Date.parse(created),
+          }))
+        );
       });
   }, []);
 
+  /** @param {Todo} todo */
   const addTodo = (todo) => {
     setTodoList((list) => [todo, ...list]);
   };
+
+  /** @param {number} index */
   const toggleDone = (index) => {
     setTodoList((list) =>
       list.map((todo, i) => {
@@ -44,7 +66,11 @@ function App() {
 
   const valid = todoText.length >= 1;
   const submitTodo = () => {
-    addTodo({ done: false, text: todoText });
+    addTodo({
+      done: false,
+      text: todoText,
+      createdAt: Date.now(),
+    });
     setTodoText("");
   };
 
@@ -68,6 +94,32 @@ function App() {
       <button type="button" disabled=${!valid} onClick=${submitTodo}>
         Add
       </button>
+    </p>
+
+    <p>
+      Order by:${" "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          setTodoList((list) =>
+            [...list].sort((t1, t2) => -t1.createdAt + t2.createdAt)
+          );
+        }}
+        >Created</a
+      >${" | "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          setTodoList((list) =>
+            [...list].sort((t1, t2) => t1.text.localeCompare(t2.text))
+          );
+        }}
+        >Text</a
+      >
     </p>
 
     <div>
