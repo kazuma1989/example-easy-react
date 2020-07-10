@@ -3,40 +3,45 @@
 // @ts-ignore
 import { css, cx } from "https://cdn.pika.dev/emotion";
 
+document.body.innerHTML = `
+  <h1>TODO list (vanilla)</h1>
+
+  <textarea id="input" rows="2" autofocus></textarea>
+  <p>
+    <button id="add" type="button">Add</button>
+  </p>
+
+  <div id="list"></div>
+`;
+
 /** @type {HTMLElement} */
-const list = document.querySelector("#list");
+const list = document.body.querySelector("#list");
 
 [
-  {
-    done: true,
-    text: "brake the wall",
-  },
-  {
-    done: false,
-    text: "fix the wall",
-  },
+  { done: true, text: "brake the wall" },
+  { done: false, text: "fix the wall" },
 ].forEach((todo) => {
   addItem(list, todo);
 });
 
 /** @type {HTMLTextAreaElement} */
-const input = document.querySelector("#input");
+const inputArea = document.body.querySelector("#input");
 /** @type {HTMLButtonElement} */
-const submit = document.querySelector("#button");
+const addButton = document.body.querySelector("#add");
 
-input.addEventListener("keydown", (ev) => {
+inputArea.addEventListener("keydown", (ev) => {
   // Command + Enter のみ処理
   if (!(ev.metaKey && ev.code === "Enter")) return;
 
-  submit.click();
+  addButton.click();
 });
 
-submit.addEventListener("click", () => {
-  if (!input.value) return;
+addButton.addEventListener("click", () => {
+  if (!inputArea.value) return;
 
-  addItem(list, { done: false, text: input.value });
+  addItem(list, { done: false, text: inputArea.value });
 
-  input.value = "";
+  inputArea.value = "";
 });
 
 /**

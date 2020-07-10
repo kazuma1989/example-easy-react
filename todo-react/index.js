@@ -13,14 +13,8 @@ import { css, cx } from "https://cdn.pika.dev/emotion";
 function App() {
   const [todoText, setTodoText] = useState("");
   const [todoList, setTodoList] = useState([
-    {
-      done: false,
-      text: "fix the wall",
-    },
-    {
-      done: true,
-      text: "brake the wall",
-    },
+    { done: false, text: "fix the wall" },
+    { done: true, text: "brake the wall" },
   ]);
 
   console.log({ todoText, todoList });
