@@ -6,9 +6,9 @@ import {
   useState,
   useEffect,
   // @ts-ignore
-} from "https://unpkg.com/htm/preact/standalone.module.js";
+} from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 // @ts-ignore
-import css from "https://unpkg.com/csz";
+import { css, cx } from "https://cdn.pika.dev/emotion";
 
 function App() {
   const [todoText, setTodoText] = useState("");
@@ -54,7 +54,7 @@ function App() {
     <h1>TODO list (React)</h1>
 
     <textarea
-      rows="3"
+      rows="2"
       autofocus
       value=${todoText}
       onInput=${(e) => setTodoText(e.currentTarget.value)}
@@ -76,12 +76,17 @@ function App() {
         ({ done, text }, i) =>
           html`
             <label
-              class=${css`
-                font-weight: normal;
-                white-space: pre-wrap;
-                text-decoration: ${done ? "line-through" : "unset"};
-                opacity: ${done ? "0.5" : "unset"};
-              `}
+              className=${cx(
+                css`
+                  font-weight: normal;
+                  white-space: pre-wrap;
+                `,
+                done &&
+                  css`
+                    text-decoration: line-through;
+                    opacity: 0.5;
+                  `
+              )}
             >
               <input
                 type="checkbox"

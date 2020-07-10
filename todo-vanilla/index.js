@@ -1,5 +1,8 @@
 // @ts-check
 
+// @ts-ignore
+import { css, cx } from "https://cdn.pika.dev/emotion";
+
 /** @type {HTMLElement} */
 const list = document.querySelector("#list");
 
@@ -42,7 +45,7 @@ submit.addEventListener("click", () => {
  */
 function addItem(list, { text, done }) {
   const item = document.createElement("div");
-  item.innerHTML = `<label style="font-weight: normal; white-space: pre-wrap;"><input type="checkbox" /> ${text}</label>`;
+  item.innerHTML = `<label><input type="checkbox" /> ${text}</label>`;
 
   /** @type {HTMLLabelElement} */
   const label = item.querySelector("label");
@@ -50,8 +53,17 @@ function addItem(list, { text, done }) {
   const checkbox = item.querySelector("input[type=checkbox]");
 
   const onChange = () => {
-    label.style.textDecoration = checkbox.checked ? "line-through" : "";
-    label.style.opacity = checkbox.checked ? "0.5" : "";
+    label.className = cx(
+      css`
+        font-weight: normal;
+        white-space: pre-wrap;
+      `,
+      checkbox.checked &&
+        css`
+          text-decoration: line-through;
+          opacity: 0.5;
+        `
+    );
   };
   checkbox.addEventListener("change", onChange);
 
