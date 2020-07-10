@@ -14,20 +14,12 @@ document.body.innerHTML = `
   <div id="list"></div>
 `;
 
-/** @type {HTMLElement} */
-const list = document.body.querySelector("#list");
-
-[
-  { done: true, text: "brake the wall" },
-  { done: false, text: "fix the wall" },
-].forEach((todo) => {
-  addItem(list, todo);
-});
-
 /** @type {HTMLTextAreaElement} */
 const inputArea = document.body.querySelector("#input");
 /** @type {HTMLButtonElement} */
 const addButton = document.body.querySelector("#add");
+/** @type {HTMLElement} */
+const todoList = document.body.querySelector("#list");
 
 inputArea.addEventListener("keydown", (ev) => {
   // Command + Enter のみ処理
@@ -39,26 +31,32 @@ inputArea.addEventListener("keydown", (ev) => {
 addButton.addEventListener("click", () => {
   if (!inputArea.value) return;
 
-  addItem(list, { done: false, text: inputArea.value });
+  prependItem(todoList, { done: false, text: inputArea.value });
 
   inputArea.value = "";
 });
+
+fetch("/db.json")
+  .then((r) => r.json())
+  .then(({ todos }) => {
+    todos.reverse().forEach((todo) => {
+      prependItem(todoList, todo);
+    });
+  });
 
 /**
  * @param {HTMLElement} list
  * @param {{ done: boolean; text: string }} _
  */
-function addItem(list, { text, done }) {
-  const item = document.createElement("div");
-  item.innerHTML = `<label><input type="checkbox" /> ${text}</label>`;
+function prependItem(list, { text, done }) {
+  const item = document.createElement("label");
+  item.innerHTML = `<input type="checkbox" /> ${text}`;
 
-  /** @type {HTMLLabelElement} */
-  const label = item.querySelector("label");
   /** @type {HTMLInputElement} */
   const checkbox = item.querySelector("input[type=checkbox]");
 
   const onChange = () => {
-    label.className = cx(
+    item.className = cx(
       css`
         font-weight: normal;
         white-space: pre-wrap;
