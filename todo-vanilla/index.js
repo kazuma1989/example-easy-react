@@ -6,7 +6,7 @@ const list = document.querySelector("#list");
 [
   {
     done: true,
-    text: "broke the wall",
+    text: "brake the wall",
   },
   {
     done: false,

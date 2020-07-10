@@ -7,6 +7,8 @@ import {
   useEffect,
   // @ts-ignore
 } from "https://unpkg.com/htm/preact/standalone.module.js";
+// @ts-ignore
+import css from "https://unpkg.com/csz";
 
 function App() {
   const [todoText, setTodoText] = useState("");
@@ -17,7 +19,7 @@ function App() {
     },
     {
       done: true,
-      text: "broke the wall",
+      text: "brake the wall",
     },
   ]);
 
@@ -74,12 +76,12 @@ function App() {
         ({ done, text }, i) =>
           html`
             <label
-              style=${{
-                fontWeight: "normal",
-                whiteSpace: "pre-wrap",
-                textDecoration: done ? "line-through" : undefined,
-                opacity: done ? 0.5 : undefined,
-              }}
+              class=${css`
+                font-weight: normal;
+                white-space: pre-wrap;
+                text-decoration: ${done ? "line-through" : "unset"};
+                opacity: ${done ? "0.5" : "unset"};
+              `}
             >
               <input
                 type="checkbox"
