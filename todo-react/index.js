@@ -12,12 +12,17 @@ import { css, cx } from "https://cdn.pika.dev/emotion";
 
 function App() {
   const [todoText, setTodoText] = useState("");
-  const [todoList, setTodoList] = useState([
-    { done: false, text: "fix the wall" },
-    { done: true, text: "brake the wall" },
-  ]);
+  const [todoList, setTodoList] = useState([]);
 
   console.log({ todoText, todoList });
+
+  useEffect(() => {
+    fetch("/db.json")
+      .then((r) => r.json())
+      .then(({ todos }) => {
+        setTodoList(todos);
+      });
+  }, []);
 
   const addTodo = (todo) => {
     setTodoList((list) => [todo, ...list]);
