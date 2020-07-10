@@ -11,6 +11,10 @@ document.body.innerHTML = `
     <button id="add" type="button">Add</button>
   </p>
 
+  <p>
+    Order by: <a id="order-by-created" href="#">Created</a> |
+    <a id="order-by-text" href="#">Text</a>
+  </p>
   <div id="list"></div>
 `;
 
@@ -18,6 +22,10 @@ document.body.innerHTML = `
 const inputArea = document.body.querySelector("#input");
 /** @type {HTMLButtonElement} */
 const addButton = document.body.querySelector("#add");
+/** @type {HTMLAnchorElement} */
+const orderByCreated = document.body.querySelector("#order-by-created");
+/** @type {HTMLAnchorElement} */
+const orderByText = document.body.querySelector("#order-by-text");
 /** @type {HTMLElement} */
 const todoList = document.body.querySelector("#list");
 
@@ -36,7 +44,11 @@ inputArea.addEventListener("keydown", (e) => {
 addButton.disabled = true;
 
 const submitTodo = () => {
-  prependItem(todoList, { done: false, text: inputArea.value });
+  prependItem(todoList, {
+    done: false,
+    text: inputArea.value,
+    created: new Date().toISOString(),
+  });
 
   inputArea.value = "";
   addButton.disabled = true;
@@ -51,13 +63,47 @@ fetch("/db.json")
     });
   });
 
+orderByCreated.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  [...todoList.children]
+    .sort(
+      /**
+       * @param {HTMLElement} t1
+       * @param {HTMLElement} t2
+       */
+      (t1, t2) =>
+        -parseInt(t1.dataset.createdAt) + parseInt(t2.dataset.createdAt)
+    )
+    .forEach((todo) => {
+      todoList.appendChild(todo);
+    });
+});
+
+orderByText.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  [...todoList.children]
+    .sort(
+      /**
+       * @param {HTMLElement} t1
+       * @param {HTMLElement} t2
+       */
+      (t1, t2) => t1.textContent.localeCompare(t2.textContent)
+    )
+    .forEach((todo) => {
+      todoList.appendChild(todo);
+    });
+});
+
 /**
  * @param {HTMLElement} list
- * @param {{ done: boolean; text: string }} _
+ * @param {{ done: boolean; text: string; created: string }} _
  */
-function prependItem(list, { text, done }) {
+function prependItem(list, { text, done, created }) {
   const item = document.createElement("label");
   item.innerHTML = `<input type="checkbox" /> ${text}`;
+  item.dataset.createdAt = Date.parse(created).toString();
 
   /** @type {HTMLInputElement} */
   const checkbox = item.querySelector("input[type=checkbox]");
