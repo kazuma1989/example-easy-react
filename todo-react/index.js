@@ -37,9 +37,8 @@ function App() {
     );
   };
 
+  const valid = todoText.length >= 1;
   const submitTodo = () => {
-    if (!todoText) return;
-
     addTodo({ done: false, text: todoText });
     setTodoText("");
   };
@@ -55,12 +54,13 @@ function App() {
       onKeydown=${(e) => {
         // Command + Enter のみ処理
         if (!(e.metaKey && e.code === "Enter")) return;
+        if (!valid) return;
 
         submitTodo();
       }}
     ></textarea>
     <p>
-      <button type="button" onClick=${submitTodo}>
+      <button type="button" disabled=${!valid} onClick=${submitTodo}>
         Add
       </button>
     </p>

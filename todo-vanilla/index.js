@@ -21,20 +21,27 @@ const addButton = document.body.querySelector("#add");
 /** @type {HTMLElement} */
 const todoList = document.body.querySelector("#list");
 
-inputArea.addEventListener("keydown", (ev) => {
-  // Command + Enter のみ処理
-  if (!(ev.metaKey && ev.code === "Enter")) return;
-
-  addButton.click();
+inputArea.addEventListener("input", () => {
+  addButton.disabled = inputArea.value?.length === 0;
 });
 
-addButton.addEventListener("click", () => {
-  if (!inputArea.value) return;
+inputArea.addEventListener("keydown", (e) => {
+  // Command + Enter のみ処理
+  if (!(e.metaKey && e.code === "Enter")) return;
+  if (inputArea.value?.length === 0) return;
 
+  submitTodo();
+});
+
+addButton.disabled = true;
+
+const submitTodo = () => {
   prependItem(todoList, { done: false, text: inputArea.value });
 
   inputArea.value = "";
-});
+  addButton.disabled = true;
+};
+addButton.addEventListener("click", submitTodo);
 
 fetch("/db.json")
   .then((r) => r.json())
