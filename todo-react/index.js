@@ -97,30 +97,48 @@ function App() {
       ${todoList.map(
         ({ done, text }, i) =>
           html`
-            <label
-              className=${cx(
-                css`
-                  font-weight: normal;
-                  white-space: pre-wrap;
-                `,
-                done &&
-                  css`
-                    text-decoration: line-through;
-                    opacity: 0.5;
-                  `
-              )}
-            >
-              <input
-                type="checkbox"
-                checked=${done}
-                onChange=${() => {
-                  toggleDone(i);
-                }}
-              />${" "}${text}
-            </label>
+            <${TodoItem}
+              text=${text}
+              done=${done}
+              onChange=${() => {
+                toggleDone(i);
+              }}
+            />
           `
       )}
     </div>
+  `;
+}
+
+/**
+ * @param {object} _
+ * @param {string} _.text
+ * @param {boolean} _.done
+ * @param {(done: boolean) => void} _.onChange
+ */
+function TodoItem({ text, done, onChange }) {
+  return html`
+    <label
+      className=${cx(
+        css`
+          font-weight: normal;
+          white-space: pre-wrap;
+        `,
+        done &&
+          css`
+            text-decoration: line-through;
+            opacity: 0.5;
+          `
+      )}
+    >
+      <input
+        type="checkbox"
+        checked=${done}
+        onChange=${(e) => {
+          onChange(e.currentTarget.checked);
+        }}
+      />${" "}${text}
+    </label>
   `;
 }
 
