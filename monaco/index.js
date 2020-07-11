@@ -1,4 +1,5 @@
 // @ts-check
+/// <reference path="./typings.d.ts" />
 
 import {
   html,
@@ -6,11 +7,8 @@ import {
   useReducer,
   useEffect,
   useRef,
-  // @ts-ignore
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
-// @ts-ignore
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
-// @ts-ignore
 import produce from "https://cdn.pika.dev/immer";
 import { srcList } from "./srcList.js";
 
@@ -29,6 +27,7 @@ const monaco = globalThis.monaco;
  * @property {'prev' | 'next'} type
  * @property {any=} payload
  */
+
 const reducer = produce(
   /**
    * @param {State} draft
@@ -37,39 +36,44 @@ const reducer = produce(
   (draft, action) => {
     switch (action?.type) {
       case "prev": {
-        const maybeNextIndex = draft.currentIndex - 1;
-        if (maybeNextIndex <= -1) return;
+        if (draft.currentIndex <= 0) return;
 
-        draft.currentIndex = maybeNextIndex;
+        draft.currentIndex -= 1;
         return;
       }
 
       case "next": {
-        const maybeNextIndex = draft.currentIndex + 1;
-        if (draft.srcList.length - 1 <= maybeNextIndex) return;
+        if (draft.currentIndex >= draft.srcList.length - 2) return;
 
-        draft.currentIndex = maybeNextIndex;
+        draft.currentIndex += 1;
         return;
       }
     }
   }
 );
 
-/** @type {State} */
-const initialState = {
-  currentIndex: 0,
-  srcList,
+/** @param {State} _ */
+const selector = ({ currentIndex, srcList }) => {
+  const original = srcList[currentIndex];
+  const modified = srcList[currentIndex + 1];
+
+  const prevDisabled = currentIndex <= 0;
+  const nextDisabled = currentIndex >= srcList.length - 2;
+
+  return {
+    original,
+    modified,
+    prevDisabled,
+    nextDisabled,
+  };
 };
 
 function App() {
-  /** @type {[State, (a: Action) => void]} */
-  const [{ currentIndex, srcList }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
-
-  const original = srcList[currentIndex];
-  const modified = srcList[currentIndex + 1];
+  const [_state, dispatch] = useReducer(reducer, {
+    currentIndex: 0,
+    srcList,
+  });
+  const { original, modified, prevDisabled, nextDisabled } = selector(_state);
 
   return html`
     <div
@@ -84,6 +88,7 @@ function App() {
       `}
     >
       <${SrcTitle}
+        disabled=${prevDisabled}
         onClick=${() => {
           dispatch({
             type: "prev",
@@ -97,7 +102,9 @@ function App() {
         ${original?.title}
         <span></span>
       <//>
+
       <${SrcTitle}
+        disabled=${nextDisabled}
         onClick=${() => {
           dispatch({
             type: "next",
@@ -155,13 +162,15 @@ function App() {
 
 /**
  * @param {object} _
+ * @param {boolean=} _.disabled
  * @param {() => void=} _.onClick
  * @param {string=} _.className
  * @param {any=} _.children
  */
-function SrcTitle({ onClick, className, children }) {
+function SrcTitle({ disabled, onClick, className, children }) {
   return html`
     <button
+      disabled=${disabled}
       onClick=${onClick}
       className=${cx(
         css`
