@@ -26,7 +26,7 @@ import { DiffEditor } from "./DiffEditor.js";
 
 /**
  * @typedef {object} Action
- * @property {'prev' | 'next' | 'set-diff-list'} type
+ * @property {'prev' | 'next' | 'set-diff-list' | 'set-hash'} type
  * @property {any=} payload
  */
 
@@ -57,6 +57,18 @@ const reducer = produce(
         draft.diffList = diffList;
         return;
       }
+
+      case "set-hash": {
+        const { hash } = action.payload;
+
+        const maybeNewIndex = parseInt(hash.slice(1));
+        if (isNaN(maybeNewIndex)) return;
+
+        if (0 <= maybeNewIndex && maybeNewIndex <= draft.diffList.length - 2) {
+          draft.currentIndex = maybeNewIndex;
+        }
+        return;
+      }
     }
   }
 );
@@ -70,6 +82,7 @@ const selector = ({ currentIndex, diffList }) => {
   const nextDisabled = currentIndex >= diffList.length - 2;
 
   return {
+    hash: `#${currentIndex}`,
     original,
     modified,
     prevDisabled,
@@ -77,12 +90,16 @@ const selector = ({ currentIndex, diffList }) => {
   };
 };
 
+const initialIndex = parseInt(location.hash.slice(1)) || 0;
+
 function App() {
   const [_state, dispatch] = useReducer(reducer, {
-    currentIndex: 0,
+    currentIndex: initialIndex,
     diffList: [],
   });
-  const { original, modified, prevDisabled, nextDisabled } = selector(_state);
+  const { hash, original, modified, prevDisabled, nextDisabled } = selector(
+    _state
+  );
 
   useEffect(() => {
     fetch("/diff-list.json")
@@ -94,7 +111,34 @@ function App() {
             diffList,
           },
         });
+
+        dispatch({
+          type: "set-hash",
+          payload: {
+            hash: location.hash,
+          },
+        });
       });
+  }, []);
+
+  useEffect(() => {
+    location.hash = hash;
+  }, [hash]);
+
+  useEffect(() => {
+    const listener = () => {
+      dispatch({
+        type: "set-hash",
+        payload: {
+          hash: location.hash,
+        },
+      });
+    };
+
+    globalThis.addEventListener("hashchange", listener);
+    return () => {
+      globalThis.removeEventListener("hashchange", listener);
+    };
   }, []);
 
   return html`
