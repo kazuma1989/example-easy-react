@@ -3,48 +3,80 @@
 import {
   html,
   render,
-  useState,
+  useReducer,
   useEffect,
   useRef,
   // @ts-ignore
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 // @ts-ignore
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
+// @ts-ignore
+import produce from "https://cdn.pika.dev/immer";
 
 const monaco = globalThis.monaco;
 
-injectGlobal`
-  * {
-    box-sizing: border-box;
-  }
+const reducer = produce((draft, action) => {
+  switch (action?.type) {
+    case "switch-diff": {
+      const { next } = action.payload;
 
-  html,
-  body {
-    max-width: unset;
-    height: 100%;
-    margin: 0;
-    padding: 0;
+      draft.original = draft.modified;
+      draft.modified = next;
+    }
   }
-`;
+});
 
 function App() {
+  const [{ original, modified }, dispatch] = useReducer(reducer, {});
+  console.log({ original, modified });
+
+  useEffect(() => {
+    dispatch({
+      type: "switch-diff",
+      payload: {
+        next: "part_1",
+      },
+    });
+
+    dispatch({
+      type: "switch-diff",
+      payload: {
+        next: "part_2",
+      },
+    });
+
+    setTimeout(() => {
+      dispatch({
+        type: "switch-diff",
+        payload: {
+          next: "part_3",
+        },
+      });
+    }, 2_000);
+  }, []);
+
   const container$ = useRef();
   useEffect(() => {
     const container = container$.current;
     if (!container) return;
 
-    const diffEditor = monaco.editor.createDiffEditor(container);
+    if (!original || !modified) return;
+
+    container.innerHTML = "";
+    const diffEditor = monaco.editor.createDiffEditor(container, {
+      readOnly: true,
+    });
 
     Promise.all([
-      fetch("./part_1/index.js").then((r) => r.text()),
-      fetch("./part_2/index.js").then((r) => r.text()),
+      fetch(`./${original}/index.js`).then((r) => r.text()),
+      fetch(`./${modified}/index.js`).then((r) => r.text()),
     ]).then(([originalTxt, modifiedTxt]) => {
       diffEditor.setModel({
         original: monaco.editor.createModel(originalTxt, "javascript"),
         modified: monaco.editor.createModel(modifiedTxt, "javascript"),
       });
     });
-  }, []);
+  }, [original, modified]);
 
   return html`
     <div
@@ -67,7 +99,7 @@ function App() {
       ></div>
 
       <iframe
-        src="./part_1"
+        src=${`./${original}`}
         className=${css`
           grid-area: preview-original;
           width: 100%;
@@ -76,7 +108,7 @@ function App() {
       ></iframe>
 
       <iframe
-        src="./part_2"
+        src=${`./${modified}`}
         className=${css`
           grid-area: preview-modified;
           width: 100%;
@@ -86,5 +118,19 @@ function App() {
     </div>
   `;
 }
+
+injectGlobal`
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    max-width: unset;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+`;
 
 render(html`<${App} />`, document.body);
