@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TODO list</title>
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/sakura.css@1.3.0/css/normalize.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/sakura.css@1.3.0/css/sakura-dark.css"
-    />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
 
     <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
     <script>
@@ -25,8 +27,8 @@
         const diffEditor = monaco.editor.createDiffEditor(container);
 
         const [originalTxt, modifiedTxt] = await Promise.all([
-          fetch("original.txt").then((r) => r.text()),
-          fetch("modified.txt").then((r) => r.text()),
+          fetch("./part_1/index.js").then((r) => r.text()),
+          fetch("./part_2/index.js").then((r) => r.text()),
         ]);
 
         diffEditor.setModel({
@@ -38,10 +40,6 @@
   </head>
 
   <body>
-    <h2>Monaco Diff Editor Sample</h2>
-    <div
-      id="container"
-      style="width: 800px; height: 600px; border: 1px solid grey;"
-    ></div>
+    <div id="container" style="width: 100%; height: 100%;"></div>
   </body>
 </html>
