@@ -77,24 +77,12 @@ function App() {
   return html`
     <h1>TODO list (React)</h1>
 
-    <textarea
-      rows="2"
-      autofocus
+    <${InputArea}
       value=${todoText}
-      onInput=${(e) => setTodoText(e.currentTarget.value)}
-      onKeydown=${(e) => {
-        // Command + Enter のみ処理
-        if (!(e.metaKey && e.code === "Enter")) return;
-        if (!valid) return;
-
-        submitTodo();
-      }}
-    ></textarea>
-    <p>
-      <button type="button" disabled=${!valid} onClick=${submitTodo}>
-        Add
-      </button>
-    </p>
+      valid=${valid}
+      onInput=${setTodoText}
+      onSubmit=${submitTodo}
+    />
 
     <p>
       Order by:${" "}
@@ -146,6 +134,37 @@ function App() {
           `
       )}
     </div>
+  `;
+}
+
+/**
+ * @param {object} _
+ * @param {string} _.value
+ * @param {boolean} _.valid
+ * @param {(v: string) => void} _.onInput
+ * @param {() => void} _.onSubmit
+ */
+function InputArea({ value, valid, onInput, onSubmit }) {
+  return html`
+    <textarea
+      rows="2"
+      autofocus
+      value=${value}
+      onInput=${(e) => onInput(e.currentTarget.value)}
+      onKeydown=${(e) => {
+        // Command + Enter のみ処理
+        if (!(e.metaKey && e.code === "Enter")) return;
+        if (!valid) return;
+
+        onSubmit();
+      }}
+    ></textarea>
+
+    <p>
+      <button type="button" disabled=${!valid} onClick=${onSubmit}>
+        Add
+      </button>
+    </p>
   `;
 }
 
