@@ -17,3 +17,38 @@ declare module "https://cdn.pika.dev/htm/preact/standalone.module.js" {
     initialState?: S
   ): [S, (action: A) => void];
 }
+
+/**
+ * @see https://gist.github.com/strothj/708afcf4f01dd04de8f49c92e88093c3
+ */
+declare class ResizeObserver {
+  constructor(callback: ResizeObserverCallback);
+  disconnect: () => void;
+  observe: (target: Element, options?: ResizeObserverObserveOptions) => void;
+  unobserve: (target: Element) => void;
+}
+
+interface ResizeObserverObserveOptions {
+  box?: "content-box" | "border-box";
+}
+
+type ResizeObserverCallback = (
+  entries: ResizeObserverEntry[],
+  observer: ResizeObserver
+) => void;
+
+interface ResizeObserverEntry {
+  readonly borderBoxSize: ResizeObserverEntryBoxSize;
+  readonly contentBoxSize: ResizeObserverEntryBoxSize;
+  readonly contentRect: DOMRectReadOnly;
+  readonly target: Element;
+}
+
+interface ResizeObserverEntryBoxSize {
+  blockSize: number;
+  inlineSize: number;
+}
+
+interface Window {
+  ResizeObserver: typeof ResizeObserver;
+}

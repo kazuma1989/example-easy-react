@@ -22,10 +22,11 @@ const monaco = globalThis.monaco;
  * @param {string=} _.className
  */
 export function DiffEditor({ original, modified, className }) {
-  const container$ = useRef();
+  const diffEditor$ = useRef();
+
   useEffect(() => {
-    const container = container$.current;
-    if (!container) return;
+    const diffEditor = diffEditor$.current;
+    if (!diffEditor) return;
 
     if (!original || !modified) return;
 
@@ -33,21 +34,45 @@ export function DiffEditor({ original, modified, className }) {
       fetch(original.src).then((r) => r.text()),
       fetch(modified.src).then((r) => r.text()),
     ]).then(([originalTxt, modifiedTxt]) => {
+      diffEditor.dispose();
+
+      const container = diffEditor.getDomNode();
       container.innerHTML = "";
-      const diffEditor = monaco.editor.createDiffEditor(container, {
+
+      diffEditor$.current = monaco.editor.createDiffEditor(container, {
         readOnly: true,
       });
 
-      diffEditor.setModel({
+      diffEditor$.current.setModel({
         original: monaco.editor.createModel(originalTxt, original.lang),
         modified: monaco.editor.createModel(modifiedTxt, original.lang),
       });
     });
   }, [original, modified]);
 
+  const target = diffEditor$.current?.getDomNode();
+  useEffect(() => {
+    if (!target) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      diffEditor$.current?.layout(entry.contentRect);
+    });
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [target]);
+
   return html`
     <div
-      ref=${container$}
+      ref=${(e) => {
+        if (!e) return;
+
+        diffEditor$.current = monaco.editor.createDiffEditor(e, {
+          readOnly: true,
+        });
+      }}
       className=${cx(
         css`
           border: solid 1px silver;
