@@ -5,23 +5,28 @@ import {
   html,
   render,
   useReducer,
+  useEffect,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
 import produce from "https://cdn.pika.dev/immer";
-import { srcList } from "./srcList.js";
 import { DiffEditor } from "./DiffEditor.js";
 
 /**
- * @typedef {import('./srcList.js').Src} Src
+ * @typedef {object} DiffSrc
+ * @property {string} title
+ * @property {string} path
+ * @property {string} preview
  */
+
 /**
  * @typedef {object} State
  * @property {number} currentIndex
- * @property {Src[]} srcList
+ * @property {DiffSrc[]} diffList
  */
+
 /**
  * @typedef {object} Action
- * @property {'prev' | 'next'} type
+ * @property {'prev' | 'next' | 'set-diff-list'} type
  * @property {any=} payload
  */
 
@@ -40,9 +45,16 @@ const reducer = produce(
       }
 
       case "next": {
-        if (draft.currentIndex >= draft.srcList.length - 2) return;
+        if (draft.currentIndex >= draft.diffList.length - 2) return;
 
         draft.currentIndex += 1;
+        return;
+      }
+
+      case "set-diff-list": {
+        const { diffList } = action.payload;
+
+        draft.diffList = diffList;
         return;
       }
     }
@@ -50,12 +62,12 @@ const reducer = produce(
 );
 
 /** @param {State} _ */
-const selector = ({ currentIndex, srcList }) => {
-  const original = srcList[currentIndex];
-  const modified = srcList[currentIndex + 1];
+const selector = ({ currentIndex, diffList }) => {
+  const original = diffList[currentIndex];
+  const modified = diffList[currentIndex + 1];
 
   const prevDisabled = currentIndex <= 0;
-  const nextDisabled = currentIndex >= srcList.length - 2;
+  const nextDisabled = currentIndex >= diffList.length - 2;
 
   return {
     original,
@@ -68,9 +80,22 @@ const selector = ({ currentIndex, srcList }) => {
 function App() {
   const [_state, dispatch] = useReducer(reducer, {
     currentIndex: 0,
-    srcList,
+    diffList: [],
   });
   const { original, modified, prevDisabled, nextDisabled } = selector(_state);
+
+  useEffect(() => {
+    fetch("/diff-list.json")
+      .then((r) => r.json())
+      .then((diffList) => {
+        dispatch({
+          type: "set-diff-list",
+          payload: {
+            diffList,
+          },
+        });
+      });
+  }, []);
 
   return html`
     <div
