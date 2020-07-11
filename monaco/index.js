@@ -58,18 +58,31 @@ function App() {
       `}
     >
       <${SrcTitle}
+        onClick=${() => {}}
         className=${css`
           grid-area: title-original;
         `}
       >
+        <${Icon} type="left-arrow" />
         ${original}
+        <span></span>
       <//>
       <${SrcTitle}
+        onClick=${() => {
+          dispatch({
+            type: "switch-diff",
+            payload: {
+              next: "part_3",
+            },
+          });
+        }}
         className=${css`
           grid-area: title-modified;
         `}
       >
+        <span></span>
         ${modified}
+        <${Icon} type="right-arrow" />
       <//>
 
       <${DiffEditor}
@@ -115,27 +128,51 @@ function App() {
 
 /**
  * @param {object} _
+ * @param {() => void=} _.onClick
  * @param {string=} _.className
  * @param {any=} _.children
  */
-function SrcTitle({ className, children }) {
+function SrcTitle({ onClick, className, children }) {
   return html`
-    <div
+    <button
+      onClick=${onClick}
       className=${cx(
         css`
           border: solid 1px silver;
           display: flex;
           align-items: center;
-          padding: 0 8px;
-
-          justify-content: center;
+          justify-content: space-between;
         `,
         className
       )}
     >
       ${children}
-    </div>
+    </button>
   `;
+}
+
+/**
+ * @param {object} _
+ * @param {'left-arrow' | 'right-arrow'} _.type
+ */
+function Icon({ type }) {
+  switch (type) {
+    case "left-arrow": {
+      return html`
+        <svg viewBox="0 0 50 100" style="fill: currentColor; height: 1em;">
+          <polygon points="50,0 50,100 0,50" />
+        </svg>
+      `;
+    }
+
+    case "right-arrow": {
+      return html`
+        <svg viewBox="0 0 50 100" style="fill: currentColor; height: 1em;">
+          <polygon points="0,0 0,100 50,50" />
+        </svg>
+      `;
+    }
+  }
 }
 
 /**
