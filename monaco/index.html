@@ -13,20 +13,20 @@
       rel="stylesheet"
       href="https://unpkg.com/sakura.css@1.3.0/css/sakura.css"
     />
-  </head>
 
-  <body>
-    <script>
-      globalThis.require = {
+    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+    <script type="module">
+      require.config({
         paths: {
           vs: "https://unpkg.com/monaco-editor/min/vs",
         },
-      };
-    </script>
-    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-    <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
-    <script src="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.js"></script>
+      });
 
-    <script type="module" src="./index.js"></script>
-  </body>
+      require(["vs/editor/editor.main"], () => {
+        import("./index.js");
+      });
+    </script>
+  </head>
+
+  <body></body>
 </html>
