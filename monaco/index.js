@@ -5,10 +5,13 @@ import {
   render,
   useState,
   useEffect,
+  useRef,
   // @ts-ignore
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 // @ts-ignore
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
+
+const monaco = globalThis.monaco;
 
 injectGlobal`
   * {
@@ -25,6 +28,24 @@ injectGlobal`
 `;
 
 function App() {
+  const container$ = useRef();
+  useEffect(() => {
+    const container = container$.current;
+    if (!container) return;
+
+    const diffEditor = monaco.editor.createDiffEditor(container);
+
+    Promise.all([
+      fetch("./part_1/index.js").then((r) => r.text()),
+      fetch("./part_2/index.js").then((r) => r.text()),
+    ]).then(([originalTxt, modifiedTxt]) => {
+      diffEditor.setModel({
+        original: monaco.editor.createModel(originalTxt, "javascript"),
+        modified: monaco.editor.createModel(modifiedTxt, "javascript"),
+      });
+    });
+  }, []);
+
   return html`
     <div
       className=${css`
@@ -36,14 +57,14 @@ function App() {
           / 1fr 1fr 30px;
       `}
     >
-      <iframe
-        src="./diff.html"
+      <div
+        ref=${container$}
         className=${css`
           grid-area: diff;
           width: 100%;
           height: 100%;
         `}
-      ></iframe>
+      ></div>
 
       <iframe
         src="./part_1"
