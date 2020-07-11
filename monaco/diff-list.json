@@ -1,5 +1,11 @@
 [
   {
+    "title": "part 0",
+    "path": "/part_0/index.js",
+    "preview": "/part_0/index.html"
+  },
+
+  {
     "title": "part 1",
     "path": "/part_1/index.js",
     "preview": "/part_1/index.html"
