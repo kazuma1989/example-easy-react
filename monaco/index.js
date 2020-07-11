@@ -67,8 +67,18 @@ function App() {
       `}
     >
       <${DiffEditor}
-        original=${original}
-        modified=${modified}
+        original=${original
+          ? {
+              src: `./${original}/index.js`,
+              lang: "javascript",
+            }
+          : undefined}
+        modified=${modified
+          ? {
+              src: `./${modified}/index.js`,
+              lang: "javascript",
+            }
+          : undefined}
         className=${css`
           grid-area: diff;
           width: 100%;
@@ -77,7 +87,7 @@ function App() {
       />
 
       <${Iframe}
-        src=${`./${original}`}
+        src=${original ? `./${original}` : undefined}
         className=${css`
           grid-area: preview-original;
           width: 100%;
@@ -86,7 +96,7 @@ function App() {
       />
 
       <${Iframe}
-        src=${`./${modified}`}
+        src=${modified ? `./${modified}` : undefined}
         className=${css`
           grid-area: preview-modified;
           width: 100%;
@@ -97,6 +107,16 @@ function App() {
   `;
 }
 
+/**
+ * @typedef {object} Model
+ * @property {string} src
+ * @property {string} lang
+ *
+ * @param {object} _
+ * @param {Model=} _.original
+ * @param {Model=} _.modified
+ * @param {string=} _.className
+ */
 function DiffEditor({ original, modified, className }) {
   const container$ = useRef();
   useEffect(() => {
@@ -105,18 +125,18 @@ function DiffEditor({ original, modified, className }) {
 
     if (!original || !modified) return;
 
-    container.innerHTML = "";
-    const diffEditor = monaco.editor.createDiffEditor(container, {
-      readOnly: true,
-    });
-
     Promise.all([
-      fetch(`./${original}/index.js`).then((r) => r.text()),
-      fetch(`./${modified}/index.js`).then((r) => r.text()),
+      fetch(original.src).then((r) => r.text()),
+      fetch(modified.src).then((r) => r.text()),
     ]).then(([originalTxt, modifiedTxt]) => {
+      container.innerHTML = "";
+      const diffEditor = monaco.editor.createDiffEditor(container, {
+        readOnly: true,
+      });
+
       diffEditor.setModel({
-        original: monaco.editor.createModel(originalTxt, "javascript"),
-        modified: monaco.editor.createModel(modifiedTxt, "javascript"),
+        original: monaco.editor.createModel(originalTxt, original.lang),
+        modified: monaco.editor.createModel(modifiedTxt, original.lang),
       });
     });
   }, [original, modified]);
@@ -124,6 +144,11 @@ function DiffEditor({ original, modified, className }) {
   return html`<div ref=${container$} className=${className}></div>`;
 }
 
+/**
+ * @param {object} _
+ * @param {string=} _.src
+ * @param {string=} _.className
+ */
 function Iframe({ src, className }) {
   return html`<iframe
     src=${src}
