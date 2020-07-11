@@ -28,7 +28,6 @@ const reducer = produce((draft, action) => {
 
 function App() {
   const [{ original, modified }, dispatch] = useReducer(reducer, {});
-  console.log({ original, modified });
 
   useEffect(() => {
     dispatch({
@@ -44,15 +43,6 @@ function App() {
         next: "part_2",
       },
     });
-
-    setTimeout(() => {
-      dispatch({
-        type: "switch-diff",
-        payload: {
-          next: "part_3",
-        },
-      });
-    }, 2_000);
   }, []);
 
   return html`
@@ -61,11 +51,27 @@ function App() {
         height: 100%;
         display: grid;
         grid-template:
-          "diff diff diff" 35%
-          "preview-original preview-modified spacer" 65%
+          "title-original title-modified title-spacer" 40px
+          "diff diff diff" 45%
+          "preview-original preview-modified preview-spacer" 1fr
           / 1fr 1fr 30px;
       `}
     >
+      <${SrcTitle}
+        className=${css`
+          grid-area: title-original;
+        `}
+      >
+        ${original}
+      <//>
+      <${SrcTitle}
+        className=${css`
+          grid-area: title-modified;
+        `}
+      >
+        ${modified}
+      <//>
+
       <${DiffEditor}
         original=${original
           ? {
@@ -103,6 +109,31 @@ function App() {
           height: 100%;
         `}
       />
+    </div>
+  `;
+}
+
+/**
+ * @param {object} _
+ * @param {string=} _.className
+ * @param {any=} _.children
+ */
+function SrcTitle({ className, children }) {
+  return html`
+    <div
+      className=${cx(
+        css`
+          border: solid 1px silver;
+          display: flex;
+          align-items: center;
+          padding: 0 8px;
+
+          justify-content: center;
+        `,
+        className
+      )}
+    >
+      ${children}
     </div>
   `;
 }
