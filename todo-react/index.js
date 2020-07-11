@@ -84,27 +84,14 @@ function App() {
       onSubmit=${submitTodo}
     />
 
-    <p>
-      Order by:${" "}
-      <a
-        href="#"
-        onClick=${(e) => {
-          e.preventDefault();
-
-          sortTodo((t1, t2) => -t1.createdAt.localeCompare(t2.createdAt));
-        }}
-        >Created</a
-      >${" | "}
-      <a
-        href="#"
-        onClick=${(e) => {
-          e.preventDefault();
-
-          sortTodo((t1, t2) => t1.text.localeCompare(t2.text));
-        }}
-        >Text</a
-      >
-    </p>
+    <${ReorderSwitch}
+      onClickCreated=${() => {
+        sortTodo((t1, t2) => -t1.createdAt.localeCompare(t2.createdAt));
+      }}
+      onClickText=${() => {
+        sortTodo((t1, t2) => t1.text.localeCompare(t2.text));
+      }}
+    />
 
     <div>
       ${todoList.map(
@@ -164,6 +151,38 @@ function InputArea({ value, valid, onInput, onSubmit }) {
       <button type="button" disabled=${!valid} onClick=${onSubmit}>
         Add
       </button>
+    </p>
+  `;
+}
+
+/**
+ * @param {object} _
+ * @param {() => void} _.onClickCreated
+ * @param {() => void} _.onClickText
+ */
+function ReorderSwitch({ onClickCreated, onClickText }) {
+  return html`
+    <p>
+      Order by:${" "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          onClickCreated();
+        }}
+        >Created</a
+      >
+      ${" | "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          onClickText();
+        }}
+        >Text</a
+      >
     </p>
   `;
 }
