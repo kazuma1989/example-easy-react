@@ -12,38 +12,64 @@ import {
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
 // @ts-ignore
 import produce from "https://cdn.pika.dev/immer";
+import { srcList } from "./srcList.js";
 
 const monaco = globalThis.monaco;
 
-const reducer = produce((draft, action) => {
-  switch (action?.type) {
-    case "switch-diff": {
-      const { next } = action.payload;
+/**
+ * @typedef {import('./srcList.js').Src} Src
+ */
+/**
+ * @typedef {object} State
+ * @property {number} currentIndex
+ * @property {Src[]} srcList
+ */
+/**
+ * @typedef {object} Action
+ * @property {'prev' | 'next'} type
+ * @property {any=} payload
+ */
+const reducer = produce(
+  /**
+   * @param {State} draft
+   * @param {Action} action
+   */
+  (draft, action) => {
+    switch (action?.type) {
+      case "prev": {
+        const maybeNextIndex = draft.currentIndex - 1;
+        if (maybeNextIndex <= -1) return;
 
-      draft.original = draft.modified;
-      draft.modified = next;
+        draft.currentIndex = maybeNextIndex;
+        return;
+      }
+
+      case "next": {
+        const maybeNextIndex = draft.currentIndex + 1;
+        if (draft.srcList.length - 1 <= maybeNextIndex) return;
+
+        draft.currentIndex = maybeNextIndex;
+        return;
+      }
     }
   }
-});
+);
+
+/** @type {State} */
+const initialState = {
+  currentIndex: 0,
+  srcList,
+};
 
 function App() {
-  const [{ original, modified }, dispatch] = useReducer(reducer, {});
+  /** @type {[State, (a: Action) => void]} */
+  const [{ currentIndex, srcList }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
-  useEffect(() => {
-    dispatch({
-      type: "switch-diff",
-      payload: {
-        next: "part_1",
-      },
-    });
-
-    dispatch({
-      type: "switch-diff",
-      payload: {
-        next: "part_2",
-      },
-    });
-  }, []);
+  const original = srcList[currentIndex];
+  const modified = srcList[currentIndex + 1];
 
   return html`
     <div
@@ -58,22 +84,23 @@ function App() {
       `}
     >
       <${SrcTitle}
-        onClick=${() => {}}
+        onClick=${() => {
+          dispatch({
+            type: "prev",
+          });
+        }}
         className=${css`
           grid-area: title-original;
         `}
       >
         <${Icon} type="left-arrow" />
-        ${original}
+        ${original?.title}
         <span></span>
       <//>
       <${SrcTitle}
         onClick=${() => {
           dispatch({
-            type: "switch-diff",
-            payload: {
-              next: "part_3",
-            },
+            type: "next",
           });
         }}
         className=${css`
@@ -81,20 +108,20 @@ function App() {
         `}
       >
         <span></span>
-        ${modified}
+        ${modified?.title}
         <${Icon} type="right-arrow" />
       <//>
 
       <${DiffEditor}
         original=${original
           ? {
-              src: `./${original}/index.js`,
+              src: original.path,
               lang: "javascript",
             }
           : undefined}
         modified=${modified
           ? {
-              src: `./${modified}/index.js`,
+              src: modified.path,
               lang: "javascript",
             }
           : undefined}
@@ -106,7 +133,7 @@ function App() {
       />
 
       <${Iframe}
-        src=${original ? `./${original}` : undefined}
+        src=${original?.preview}
         className=${css`
           grid-area: preview-original;
           width: 100%;
@@ -115,7 +142,7 @@ function App() {
       />
 
       <${Iframe}
-        src=${modified ? `./${modified}` : undefined}
+        src=${modified?.preview}
         className=${css`
           grid-area: preview-modified;
           width: 100%;
@@ -179,7 +206,8 @@ function Icon({ type }) {
  * @typedef {object} Model
  * @property {string} src
  * @property {string} lang
- *
+ */
+/**
  * @param {object} _
  * @param {Model=} _.original
  * @param {Model=} _.modified
@@ -209,7 +237,16 @@ function DiffEditor({ original, modified, className }) {
     });
   }, [original, modified]);
 
-  return html`<div ref=${container$} className=${className}></div>`;
+  return html`<div
+    ref=${container$}
+    className=${cx(
+      css`
+        border: solid 1px silver;
+        border-right: none;
+      `,
+      className
+    )}
+  ></div>`;
 }
 
 /**
