@@ -55,6 +55,49 @@ function App() {
     }, 2_000);
   }, []);
 
+  return html`
+    <div
+      className=${css`
+        height: 100%;
+        display: grid;
+        grid-template:
+          "diff diff diff" 35%
+          "preview-original preview-modified spacer" 65%
+          / 1fr 1fr 30px;
+      `}
+    >
+      <${DiffEditor}
+        original=${original}
+        modified=${modified}
+        className=${css`
+          grid-area: diff;
+          width: 100%;
+          height: 100%;
+        `}
+      />
+
+      <${Iframe}
+        src=${`./${original}`}
+        className=${css`
+          grid-area: preview-original;
+          width: 100%;
+          height: 100%;
+        `}
+      />
+
+      <${Iframe}
+        src=${`./${modified}`}
+        className=${css`
+          grid-area: preview-modified;
+          width: 100%;
+          height: 100%;
+        `}
+      />
+    </div>
+  `;
+}
+
+function DiffEditor({ original, modified, className }) {
   const container$ = useRef();
   useEffect(() => {
     const container = container$.current;
@@ -78,45 +121,19 @@ function App() {
     });
   }, [original, modified]);
 
-  return html`
-    <div
-      className=${css`
-        height: 100%;
-        display: grid;
-        grid-template:
-          "diff diff diff" 35%
-          "preview-original preview-modified spacer" 65%
-          / 1fr 1fr 30px;
-      `}
-    >
-      <div
-        ref=${container$}
-        className=${css`
-          grid-area: diff;
-          width: 100%;
-          height: 100%;
-        `}
-      ></div>
+  return html`<div ref=${container$} className=${className}></div>`;
+}
 
-      <iframe
-        src=${`./${original}`}
-        className=${css`
-          grid-area: preview-original;
-          width: 100%;
-          height: 100%;
-        `}
-      ></iframe>
-
-      <iframe
-        src=${`./${modified}`}
-        className=${css`
-          grid-area: preview-modified;
-          width: 100%;
-          height: 100%;
-        `}
-      ></iframe>
-    </div>
-  `;
+function Iframe({ src, className }) {
+  return html`<iframe
+    src=${src}
+    className=${cx(
+      css`
+        border: solid 1px silver;
+      `,
+      className
+    )}
+  ></iframe>`;
 }
 
 injectGlobal`
