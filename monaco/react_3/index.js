@@ -63,20 +63,21 @@ function App() {
   return html`
     <h1>TODO list (React)</h1>
 
-    <textarea
-      rows="2"
-      autofocus
-      value=${todoText}
-      onInput=${(e) => setTodoText(e.currentTarget.value)}
-      onKeydown=${(e) => {
-        // Command + Enter のみ処理
-        if (!(e.metaKey && e.code === "Enter")) return;
-        if (!valid) return;
-
-        addTodo();
-      }}
-    ></textarea>
     <p>
+      <textarea
+        rows="2"
+        autofocus
+        value=${todoText}
+        onInput=${(e) => setTodoText(e.currentTarget.value)}
+        onKeydown=${(e) => {
+          // Command + Enter のみ処理
+          if (!(e.metaKey && e.code === "Enter")) return;
+          if (!valid) return;
+
+          addTodo();
+        }}
+      ></textarea>
+
       <button type="button" disabled=${!valid} onClick=${addTodo}>
         Add
       </button>

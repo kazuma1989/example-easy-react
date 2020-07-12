@@ -6,8 +6,8 @@ import { css, cx } from "https://cdn.pika.dev/emotion";
 document.body.innerHTML = `
   <h1>TODO list (vanilla)</h1>
 
-  <textarea id="input" rows="2" autofocus></textarea>
   <p>
+    <textarea id="input" rows="2" autofocus></textarea>
     <button id="add" type="button">Add</button>
   </p>
 
