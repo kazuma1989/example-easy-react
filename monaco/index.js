@@ -206,18 +206,10 @@ function App() {
         `}
       >
         <${DiffEditor}
-          original=${original
-            ? {
-                src: original.path,
-                lang: original.lang,
-              }
-            : undefined}
-          modified=${modified
-            ? {
-                src: modified.path,
-                lang: original.lang,
-              }
-            : undefined}
+          originalSrc=${original?.path}
+          originalLang=${original?.lang}
+          modifiedSrc=${modified?.path}
+          modifiedLang=${modified?.lang}
           className=${css`
             height: 100%;
           `}

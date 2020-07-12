@@ -11,28 +11,30 @@ import { css, cx } from "https://cdn.pika.dev/emotion";
 const monaco = globalThis.monaco;
 
 /**
- * @typedef {object} Model
- * @property {string} src
- * @property {string} lang
- */
-/**
  * @param {object} _
- * @param {Model=} _.original
- * @param {Model=} _.modified
+ * @param {string=} _.originalSrc
+ * @param {string=} _.originalLang
+ * @param {string=} _.modifiedSrc
+ * @param {string=} _.modifiedLang
  * @param {string=} _.className
  */
-export function DiffEditor({ original, modified, className }) {
+export function DiffEditor({
+  originalSrc,
+  originalLang,
+  modifiedSrc,
+  modifiedLang,
+  className,
+}) {
   const diffEditor$ = useRef();
-
   useEffect(() => {
     const diffEditor = diffEditor$.current;
     if (!diffEditor) return;
 
-    if (!original || !modified) return;
+    if (!originalSrc || !modifiedSrc) return;
 
     Promise.all([
-      fetch(original.src).then((r) => r.text()),
-      fetch(modified.src).then((r) => r.text()),
+      fetch(originalSrc).then((r) => r.text()),
+      fetch(modifiedSrc).then((r) => r.text()),
     ]).then(([originalTxt, modifiedTxt]) => {
       diffEditor.dispose();
 
@@ -44,11 +46,11 @@ export function DiffEditor({ original, modified, className }) {
       });
 
       diffEditor$.current.setModel({
-        original: monaco.editor.createModel(originalTxt, original.lang),
-        modified: monaco.editor.createModel(modifiedTxt, original.lang),
+        original: monaco.editor.createModel(originalTxt, originalLang),
+        modified: monaco.editor.createModel(modifiedTxt, modifiedLang),
       });
     });
-  }, [original, modified]);
+  }, [originalSrc, originalLang, modifiedSrc, modifiedLang]);
 
   const target = diffEditor$.current?.getDomNode();
   useEffect(() => {
@@ -67,7 +69,7 @@ export function DiffEditor({ original, modified, className }) {
   return html`
     <div
       ref=${(e) => {
-        if (!e) return;
+        if (!e || diffEditor$.current) return;
 
         diffEditor$.current = monaco.editor.createDiffEditor(e, {
           readOnly: true,
