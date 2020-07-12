@@ -7,7 +7,6 @@ import {
   useReducer,
   useEffect,
   useRef,
-  useCallback,
   useState,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
@@ -149,17 +148,24 @@ function App() {
 
   return html`
     <div
-      className=${css`
-        height: 100%;
-        display: grid;
-        grid-template:
-          "title-original title-modified title-spacer" 32px
-          "diff diff diff" auto
-          "preview-original preview-modified preview-spacer" 1fr
-          / 1fr 1fr 30px;
-        align-items: stretch;
-        justify-items: stretch;
-      `}
+      className=${cx(
+        css`
+          height: 100%;
+          display: grid;
+          grid-template:
+            "title-original title-modified title-spacer" 32px
+            "diff diff diff" auto
+            "preview-original preview-modified preview-spacer" 1fr
+            / 1fr 1fr 30px;
+          align-items: stretch;
+          justify-items: stretch;
+        `,
+        isResizing &&
+          css`
+            user-select: none;
+            pointer-events: none;
+          `
+      )}
     >
       <${SrcTitle}
         disabled=${prevDisabled}
@@ -218,28 +224,16 @@ function App() {
 
       <${Iframe}
         src=${original?.preview}
-        className=${cx(
-          css`
-            grid-area: preview-original;
-          `,
-          isResizing &&
-            css`
-              pointer-events: none;
-            `
-        )}
+        className=${css`
+          grid-area: preview-original;
+        `}
       />
 
       <${Iframe}
         src=${modified?.preview}
-        className=${cx(
-          css`
-            grid-area: preview-modified;
-          `,
-          isResizing &&
-            css`
-              pointer-events: none;
-            `
-        )}
+        className=${css`
+          grid-area: preview-modified;
+        `}
       />
     </div>
   `;
@@ -247,25 +241,28 @@ function App() {
 
 /**
  * @param {object} _
- * @param {number | string=} _.handleSize
  * @param {() => void=} _.onResizeStart
  * @param {() => void=} _.onResizeEnd
  * @param {string=} _.className
  * @param {any=} _.children
  */
-function Resizable({
-  handleSize = 4,
-  onResizeStart,
-  onResizeEnd,
-  className,
-  children,
-}) {
+function Resizable({ onResizeStart, onResizeEnd, className, children }) {
   const container$ = useRef();
   const positionY$ = useRef(0);
+  const isResizing$ = useRef(false);
 
-  const resize = useCallback(
+  const onResizeEnd$ = useRef(onResizeEnd);
+  useEffect(() => {
+    const onMouseUp = () => {
+      isResizing$.current = false;
+
+      onResizeEnd$.current?.();
+    };
+
     /** @param {MouseEvent} e */
-    (e) => {
+    const resize = (e) => {
+      if (!isResizing$.current) return;
+
       const container = container$.current;
       if (!container) return;
 
@@ -275,47 +272,39 @@ function Resizable({
       container.style.height = `${
         parseInt(getComputedStyle(container).height) + dy
       }px`;
-    },
-    []
-  );
-
-  const onResizeEnd$ = useRef(onResizeEnd);
-  useEffect(() => {
-    const onMouseUp = () => {
-      onResizeEnd$.current?.();
-      document.removeEventListener("mousemove", resize);
     };
+
+    document.addEventListener("mousemove", resize);
 
     document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mouseleave", onMouseUp);
+
     return () => {
-      document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("mousemove", resize);
+
+      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mouseleave", onMouseUp);
     };
-  }, [resize]);
+  }, []);
 
   return html`
-    <div
-      ref=${container$}
-      className=${className}
-      style=${{
-        paddingBottom: handleSize,
-      }}
-    >
+    <div ref=${container$} className=${className}>
       ${children}
 
       <div
         onMouseDown=${(e) => {
           positionY$.current = e.y;
+          isResizing$.current = true;
+
           onResizeStart?.();
-          document.addEventListener("mousemove", resize);
         }}
         className=${css`
           cursor: row-resize;
-          background-color: silver;
+          position: relative;
+          z-index: 1;
+          top: -4px;
+          height: 4px;
         `}
-        style=${{
-          height: handleSize,
-        }}
       ></div>
     </div>
   `;
