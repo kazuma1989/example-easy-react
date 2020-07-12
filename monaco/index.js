@@ -151,6 +151,8 @@ function App() {
           "diff diff diff" auto
           "preview-original preview-modified preview-spacer" 1fr
           / 1fr 1fr 30px;
+        align-items: stretch;
+        justify-items: stretch;
       `}
     >
       <${SrcTitle}
@@ -200,7 +202,6 @@ function App() {
           : undefined}
         className=${css`
           grid-area: diff;
-          width: 100%;
           height: 300px;
           overflow: auto;
           resize: vertical;
@@ -211,8 +212,6 @@ function App() {
         src=${original?.preview}
         className=${css`
           grid-area: preview-original;
-          width: 100%;
-          height: 100%;
         `}
       />
 
@@ -220,8 +219,6 @@ function App() {
         src=${modified?.preview}
         className=${css`
           grid-area: preview-modified;
-          width: 100%;
-          height: 100%;
         `}
       />
     </div>
