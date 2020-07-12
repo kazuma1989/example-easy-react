@@ -2,30 +2,35 @@
   {
     "title": "part 0",
     "path": "/part_0/index.js",
+    "lang": "javascript",
     "preview": "/part_0/index.html"
   },
 
   {
     "title": "part 1",
     "path": "/part_1/index.js",
+    "lang": "javascript",
     "preview": "/part_1/index.html"
   },
 
   {
     "title": "part 2",
     "path": "/part_2/index.js",
+    "lang": "javascript",
     "preview": "/part_2/index.html"
   },
 
   {
     "title": "part 3",
     "path": "/part_3/index.js",
+    "lang": "javascript",
     "preview": "/part_3/index.html"
   },
 
   {
     "title": "part 4",
     "path": "/part_4/index.js",
+    "lang": "javascript",
     "preview": "/part_4/index.html"
   }
 ]

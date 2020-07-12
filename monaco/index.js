@@ -15,6 +15,7 @@ import { DiffEditor } from "./DiffEditor.js";
  * @typedef {object} DiffSrc
  * @property {string} title
  * @property {string} path
+ * @property {string} lang
  * @property {string} preview
  */
 
@@ -147,7 +148,7 @@ function App() {
         height: 100%;
         display: grid;
         grid-template:
-          "title-original title-modified title-spacer" 40px
+          "title-original title-modified title-spacer" 32px
           "diff diff diff" auto
           "preview-original preview-modified preview-spacer" 1fr
           / 1fr 1fr 30px;
@@ -191,13 +192,13 @@ function App() {
         original=${original
           ? {
               src: original.path,
-              lang: "javascript",
+              lang: original.lang,
             }
           : undefined}
         modified=${modified
           ? {
               src: modified.path,
-              lang: "javascript",
+              lang: original.lang,
             }
           : undefined}
         className=${css`
@@ -243,6 +244,7 @@ function SrcTitle({ disabled, onClick, className, children }) {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          font-size: 14px;
         `,
         className
       )}
