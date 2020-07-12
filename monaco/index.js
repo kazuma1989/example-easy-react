@@ -148,7 +148,7 @@ function App() {
         display: grid;
         grid-template:
           "title-original title-modified title-spacer" 40px
-          "diff diff diff" 45%
+          "diff diff diff" auto
           "preview-original preview-modified preview-spacer" 1fr
           / 1fr 1fr 30px;
       `}
@@ -201,7 +201,9 @@ function App() {
         className=${css`
           grid-area: diff;
           width: 100%;
-          height: 100%;
+          height: 300px;
+          overflow: auto;
+          resize: vertical;
         `}
       />
 
@@ -305,6 +307,7 @@ injectGlobal`
     height: 100%;
     margin: 0;
     padding: 0;
+    overscroll-behavior: none;
   }
 `;
 
