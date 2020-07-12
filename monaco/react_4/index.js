@@ -43,6 +43,11 @@ function App() {
     setTodoText("");
   };
 
+  /** @param {(t1: Todo, t2: Todo) => number} compareFn */
+  const sortTodo = (compareFn) => {
+    setTodoList((list) => [...list].sort(compareFn));
+  };
+
   useEffect(() => {
     fetch("./db.json")
       .then((r) => r.json())
@@ -80,6 +85,29 @@ function App() {
       <button type="button" disabled=${!valid} onClick=${addTodo}>
         Add
       </button>
+    </p>
+
+    <p>
+      Order by:${" "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          sortTodo((t1, t2) => -t1.createdAt.localeCompare(t2.createdAt));
+        }}
+        >Created</a
+      >
+      ${" | "}
+      <a
+        href="#"
+        onClick=${(e) => {
+          e.preventDefault();
+
+          sortTodo((t1, t2) => t1.text.localeCompare(t2.text));
+        }}
+        >Text</a
+      >
     </p>
 
     <div>
