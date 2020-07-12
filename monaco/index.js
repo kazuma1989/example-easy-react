@@ -6,6 +6,9 @@ import {
   render,
   useReducer,
   useEffect,
+  useRef,
+  useCallback,
+  useState,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 import { css, cx, injectGlobal } from "https://cdn.pika.dev/emotion";
 import produce from "https://cdn.pika.dev/immer";
@@ -102,6 +105,8 @@ function App() {
     _state
   );
 
+  const [isResizing, setIsResizing] = useState(false);
+
   useEffect(() => {
     fetch("/diff-list.json")
       .then((r) => r.json())
@@ -188,40 +193,138 @@ function App() {
         <${Icon} type="right-arrow" />
       <//>
 
-      <${DiffEditor}
-        original=${original
-          ? {
-              src: original.path,
-              lang: original.lang,
-            }
-          : undefined}
-        modified=${modified
-          ? {
-              src: modified.path,
-              lang: original.lang,
-            }
-          : undefined}
+      <${Resizable}
+        onResizeStart=${() => {
+          setIsResizing(true);
+        }}
+        onResizeEnd=${() => {
+          setIsResizing(false);
+        }}
         className=${css`
           grid-area: diff;
           height: 300px;
-          overflow: auto;
-          resize: vertical;
         `}
-      />
+      >
+        <${DiffEditor}
+          original=${original
+            ? {
+                src: original.path,
+                lang: original.lang,
+              }
+            : undefined}
+          modified=${modified
+            ? {
+                src: modified.path,
+                lang: original.lang,
+              }
+            : undefined}
+          className=${css`
+            height: 100%;
+          `}
+        />
+      <//>
 
       <${Iframe}
         src=${original?.preview}
-        className=${css`
-          grid-area: preview-original;
-        `}
+        className=${cx(
+          css`
+            grid-area: preview-original;
+          `,
+          isResizing &&
+            css`
+              pointer-events: none;
+            `
+        )}
       />
 
       <${Iframe}
         src=${modified?.preview}
-        className=${css`
-          grid-area: preview-modified;
-        `}
+        className=${cx(
+          css`
+            grid-area: preview-modified;
+          `,
+          isResizing &&
+            css`
+              pointer-events: none;
+            `
+        )}
       />
+    </div>
+  `;
+}
+
+/**
+ * @param {object} _
+ * @param {number | string=} _.handleSize
+ * @param {() => void=} _.onResizeStart
+ * @param {() => void=} _.onResizeEnd
+ * @param {string=} _.className
+ * @param {any=} _.children
+ */
+function Resizable({
+  handleSize = 4,
+  onResizeStart,
+  onResizeEnd,
+  className,
+  children,
+}) {
+  const container$ = useRef();
+  const positionY$ = useRef(0);
+
+  const resize = useCallback(
+    /** @param {MouseEvent} e */
+    (e) => {
+      const container = container$.current;
+      if (!container) return;
+
+      const dy = e.y - positionY$.current;
+      positionY$.current = e.y;
+
+      container.style.height = `${
+        parseInt(getComputedStyle(container).height) + dy
+      }px`;
+    },
+    []
+  );
+
+  const onResizeEnd$ = useRef(onResizeEnd);
+  useEffect(() => {
+    const onMouseUp = () => {
+      onResizeEnd$.current?.();
+      document.removeEventListener("mousemove", resize);
+    };
+
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mousemove", resize);
+    };
+  }, [resize]);
+
+  return html`
+    <div
+      ref=${container$}
+      className=${className}
+      style=${{
+        paddingBottom: handleSize,
+      }}
+    >
+      ${children}
+
+      <div
+        onMouseDown=${(e) => {
+          positionY$.current = e.y;
+          onResizeStart?.();
+          document.addEventListener("mousemove", resize);
+        }}
+        className=${css`
+          cursor: row-resize;
+          background-color: silver;
+        `}
+        style=${{
+          height: handleSize,
+        }}
+      ></div>
     </div>
   `;
 }

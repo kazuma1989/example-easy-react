@@ -12,6 +12,10 @@ declare module "https://cdn.pika.dev/htm/preact/standalone.module.js" {
   export const useEffect: Function;
   export const useRef: Function;
 
+  export function useState<S>(initial?: S): [S, (s: S | ((s: S) => S)) => void];
+
+  export function useCallback<T>(fn: T, deps: any[]): T;
+
   export function useReducer<S, A>(
     reducer: (state: S, action: A) => S,
     initialState?: S
