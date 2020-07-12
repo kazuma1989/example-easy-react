@@ -208,7 +208,7 @@ function App() {
         }}
         className=${css`
           grid-area: diff;
-          height: 300px;
+          height: 600px;
         `}
       >
         <${DiffEditor}
