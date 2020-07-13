@@ -1,12 +1,12 @@
 // @ts-check
 /// <reference path="./typings.d.ts" />
 
+import { css, cx } from "https://cdn.pika.dev/emotion";
 import {
   html,
   useEffect,
   useRef,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
-import { css, cx } from "https://cdn.pika.dev/emotion";
 
 const monaco = globalThis.monaco;
 
