@@ -152,10 +152,10 @@ export function App() {
           height: 100%;
           display: grid;
           grid-template:
-            "title-original title-modified title-spacer" ${titleHeight}px
-            "diff diff diff" auto
-            "preview-original preview-modified preview-spacer" 1fr
-            / 1fr 1fr 30px;
+            "title title-spacer" ${titleHeight}px
+            "diff diff" 1fr
+            "preview preview-spacer" auto
+            / 1fr 30px;
           align-items: stretch;
           justify-items: stretch;
         `,
@@ -166,36 +166,53 @@ export function App() {
           `
       )}
     >
-      <${SrcTitle}
-        disabled=${prevDisabled}
-        onClick=${() => {
-          dispatch({
-            type: "prev",
-          });
-        }}
+      <div
         className=${css`
-          grid-area: title-original;
+          grid-area: title;
+          display: flex;
         `}
       >
-        ${arrowLeft} ${original?.title} <span></span>
-      <//>
+        <${SrcTitle}
+          disabled=${prevDisabled}
+          onClick=${() => {
+            dispatch({
+              type: "prev",
+            });
+          }}
+          className=${css`
+            flex-grow: 1;
+          `}
+        >
+          ${arrowLeft} ${original?.title} <span></span>
+        <//>
 
-      <${SrcTitle}
-        disabled=${nextDisabled}
-        onClick=${() => {
-          dispatch({
-            type: "next",
-          });
-        }}
+        <${SrcTitle}
+          disabled=${nextDisabled}
+          onClick=${() => {
+            dispatch({
+              type: "next",
+            });
+          }}
+          className=${css`
+            flex-grow: 1;
+          `}
+        >
+          <span></span> ${modified?.title} ${arrowRight}
+        <//>
+      </div>
+
+      <${DiffEditor}
+        originalSrc=${original?.path}
+        originalLang=${original?.lang}
+        modifiedSrc=${modified?.path}
+        modifiedLang=${modified?.lang}
         className=${css`
-          grid-area: title-modified;
+          grid-area: diff;
         `}
-      >
-        <span></span> ${modified?.title} ${arrowRight}
-      <//>
+      />
 
       <${Resizable}
-        sash="bottom"
+        sash="top"
         onResizeStart=${() => {
           setIsResizing(true);
         }}
@@ -203,38 +220,35 @@ export function App() {
           setIsResizing(false);
         }}
         className=${css`
-          grid-area: diff;
-          height: 70vh;
+          grid-area: preview;
+          height: 20vh;
           min-height: 16px;
           max-height: calc(100vh - ${titleHeight}px - 16px);
         `}
       >
-        <${DiffEditor}
-          originalSrc=${original?.path}
-          originalLang=${original?.lang}
-          modifiedSrc=${modified?.path}
-          modifiedLang=${modified?.lang}
+        <div
           className=${css`
+            display: flex;
             height: 100%;
           `}
-        />
+        >
+          <${Iframe}
+            src=${original?.preview}
+            className=${css`
+              flex-grow: 1;
+              min-height: 0;
+            `}
+          />
+
+          <${Iframe}
+            src=${modified?.preview}
+            className=${css`
+              flex-grow: 1;
+              min-height: 0;
+            `}
+          />
+        </div>
       <//>
-
-      <${Iframe}
-        src=${original?.preview}
-        className=${css`
-          grid-area: preview-original;
-          min-height: 0;
-        `}
-      />
-
-      <${Iframe}
-        src=${modified?.preview}
-        className=${css`
-          grid-area: preview-modified;
-          min-height: 0;
-        `}
-      />
     </div>
   `;
 }
