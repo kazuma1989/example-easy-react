@@ -284,13 +284,21 @@ const arrowRight = html`
  * @param {string=} _.className
  */
 function Iframe({ src, className }) {
-  return html`<iframe
-    src=${src}
-    className=${cx(
-      css`
-        border: solid 1px silver;
-      `,
-      className
-    )}
-  ></iframe>`;
+  return html`
+    <iframe
+      ref=${(e) => {
+        if (!e) return;
+
+        // Monaco Editor が強制してくるので、レンダリングの都度打ち消す
+        e.style.pointerEvents = null;
+      }}
+      src=${src}
+      className=${cx(
+        css`
+          border: solid 1px silver;
+        `,
+        className
+      )}
+    ></iframe>
+  `;
 }
