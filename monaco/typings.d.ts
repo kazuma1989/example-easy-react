@@ -11,6 +11,8 @@ declare module "https://cdn.pika.dev/htm/preact/standalone.module.js" {
   export const render: Function;
   export const useEffect: Function;
 
+  export function useMemo<T>(factory: () => T, deps: any[]): T;
+
   export function useRef<T>(
     initial?: T
   ): {
