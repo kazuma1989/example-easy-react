@@ -181,7 +181,7 @@ export function App() {
             });
           }}
           className=${css`
-            flex-grow: 1;
+            width: 50%;
           `}
         >
           ${arrowLeft} ${original?.title} <span></span>
@@ -195,7 +195,7 @@ export function App() {
             });
           }}
           className=${css`
-            flex-grow: 1;
+            width: 50%;
           `}
         >
           <span></span> ${modified?.title} ${arrowRight}
