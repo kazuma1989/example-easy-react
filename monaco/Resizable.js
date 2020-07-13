@@ -5,7 +5,7 @@ import { css } from "https://cdn.pika.dev/emotion";
 import {
   html,
   useEffect,
-  useRef
+  useRef,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 /**
@@ -16,12 +16,17 @@ import {
  * @param {any=} _.children
  */
 export function Resizable({ onResizeStart, onResizeEnd, className, children }) {
+  /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
-  const positionY$ = useRef(0);
   const isResizing$ = useRef(false);
 
   const onResizeEnd$ = useRef(onResizeEnd);
+  const container = container$.current;
   useEffect(() => {
+    if (!container) return;
+
+    const view = container.ownerDocument?.defaultView;
+
     const onMouseUp = () => {
       isResizing$.current = false;
 
@@ -32,29 +37,42 @@ export function Resizable({ onResizeStart, onResizeEnd, className, children }) {
     const resize = (e) => {
       if (!isResizing$.current) return;
 
-      const container = container$.current;
-      if (!container) return;
+      // https://qiita.com/yukiB/items/31a9e9e600dfb1f34f76
+      //
+      // +-------------------------+-----------------+
+      // | Web page area           ^ pageY           |
+      // |                         |                 |
+      // |   +----------------------------------------------+
+      // |   |  Safari File       ^ screenY         |      |
+      // |   +----------------------------------------------+
+      // |   |   +--------------------------------+  |      |
+      // |   |   | ooo             |              |  |      |
+      // |   |   +--------------------------------+  |      |
+      // |   |   |                 ^ clientY      |  |      |
+      // |   |   |                 |              |  |      |
+      // |   |   |                 |              |  |      |
+      // +<---<---<----------------+              |  |      |
+      // |   |   | clientX                        |  |      |
+      // |   |   +--------------------------------+  |      |
+      // |   | screenX                               |      |
+      // |   +----------------------------------------------+
+      // | pageX                                     |
+      // +-------------------------------------------+
 
-      const dy = e.y - positionY$.current;
-      positionY$.current = e.y;
-
-      container.style.height = `${
-        parseInt(getComputedStyle(container).height) + dy
-      }px`;
+      const newHeight = e.clientY - container.getBoundingClientRect().top;
+      container.style.height = `${newHeight}px`;
     };
 
-    document.addEventListener("mousemove", resize);
-
-    document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("mouseleave", onMouseUp);
+    view.addEventListener("mousemove", resize);
+    view.addEventListener("mouseup", onMouseUp);
+    view.addEventListener("mouseleave", onMouseUp);
 
     return () => {
-      document.removeEventListener("mousemove", resize);
-
-      document.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mouseleave", onMouseUp);
+      view.removeEventListener("mousemove", resize);
+      view.removeEventListener("mouseup", onMouseUp);
+      view.removeEventListener("mouseleave", onMouseUp);
     };
-  }, []);
+  }, [container]);
 
   return html`
     <div ref=${container$} className=${className}>
@@ -62,7 +80,6 @@ export function Resizable({ onResizeStart, onResizeEnd, className, children }) {
 
       <div
         onMouseDown=${(e) => {
-          positionY$.current = e.y;
           isResizing$.current = true;
 
           onResizeStart?.();

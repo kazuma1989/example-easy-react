@@ -10,7 +10,12 @@ declare module "https://cdn.pika.dev/htm/preact/standalone.module.js" {
   export const html: Function;
   export const render: Function;
   export const useEffect: Function;
-  export const useRef: Function;
+
+  export function useRef<T>(
+    initial?: T
+  ): {
+    current?: T;
+  };
 
   export function useState<S>(initial?: S): [S, (s: S | ((s: S) => S)) => void];
 
