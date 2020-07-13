@@ -120,6 +120,12 @@ export function useResizable(props) {
   const onResize$ = useRef(props.onResize);
   const onResizeEnd$ = useRef(props.onResizeEnd);
 
+  useEffect(() => {
+    onResizeStart$.current = props.onResizeStart;
+    onResize$.current = props.onResize;
+    onResizeEnd$.current = props.onResizeEnd;
+  });
+
   const isResizing$ = useRef(false);
 
   /** @type {{ current?: HTMLElement }} */
@@ -131,6 +137,8 @@ export function useResizable(props) {
     const view = handle.ownerDocument?.defaultView;
 
     const onMouseDown = () => {
+      if (isResizing$.current) return;
+
       isResizing$.current = true;
 
       onResizeStart$.current?.();
@@ -144,6 +152,8 @@ export function useResizable(props) {
     };
 
     const onMouseUp = () => {
+      if (!isResizing$.current) return;
+
       isResizing$.current = false;
 
       onResizeEnd$.current?.();

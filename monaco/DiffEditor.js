@@ -18,12 +18,14 @@ const monaco = globalThis.monaco;
  * @param {string=} _.modifiedSrc
  * @param {string=} _.modifiedLang
  * @param {string=} _.className
+ * @param {any=}    _.style
  */
 export function DiffEditor({
   originalSrc,
   originalLang,
   modifiedSrc,
   modifiedLang,
+  style,
   className,
 }) {
   /** @type {{ current?: HTMLElement }} */
@@ -79,6 +81,7 @@ export function DiffEditor({
         `,
         className
       )}
+      style=${style}
     ></div>
   `;
 }
