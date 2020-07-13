@@ -144,6 +144,7 @@ export function App() {
   }, []);
 
   const titleHeight = 32;
+  const rightGutter = 30;
 
   return html`
     <div
@@ -155,7 +156,7 @@ export function App() {
             "title title-spacer" ${titleHeight}px
             "diff diff" 1fr
             "preview preview-spacer" auto
-            / 1fr 30px;
+            / 1fr ${rightGutter}px;
           align-items: stretch;
           justify-items: stretch;
         `,
@@ -224,27 +225,41 @@ export function App() {
           height: 20vh;
           min-height: 16px;
           max-height: calc(100vh - ${titleHeight}px - 16px);
+          display: flex;
         `}
       >
-        <div
+        <${Resizable}
+          sash="right"
+          onResizeStart=${() => {
+            setIsResizing(true);
+          }}
+          onResizeEnd=${() => {
+            setIsResizing(false);
+          }}
           className=${css`
-            display: flex;
-            height: 100%;
+            width: 50%;
+            min-width: 100px;
+            max-width: calc(100vw - ${rightGutter}px - 100px);
           `}
         >
           <${Iframe}
             src=${original?.preview}
             className=${css`
-              flex-grow: 1;
-              min-height: 0;
+              height: 100%;
             `}
           />
+        <//>
 
+        <div
+          className=${css`
+            flex-grow: 1;
+            flex-basis: 0;
+          `}
+        >
           <${Iframe}
             src=${modified?.preview}
             className=${css`
-              flex-grow: 1;
-              min-height: 0;
+              height: 100%;
             `}
           />
         </div>
@@ -311,6 +326,10 @@ function Iframe({ src, className }) {
       className=${cx(
         css`
           border: solid 1px silver;
+          display: block;
+          width: 100%;
+          min-width: 0;
+          min-height: 0;
         `,
         className
       )}

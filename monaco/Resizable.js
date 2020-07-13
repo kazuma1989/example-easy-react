@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./typings.d.ts" />
 
-import { css } from "https://cdn.pika.dev/emotion";
+import { css, cx } from "https://cdn.pika.dev/emotion";
 import {
   html,
   useEffect,
@@ -9,13 +9,15 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 /**
- * @param {object}           _
- * @param {'top' | 'bottom'} _.sash
- * @param {() => void=}      _.onResizeStart
- * @param {() => void=}      _.onResizeEnd
- * @param {string=}          _.className
- * @param {any=}             _.style
- * @param {any=}             _.children
+ * @typedef {'top' | 'right' | 'bottom' | 'left'} Sash
+ *
+ * @param {object}      _
+ * @param {Sash}        _.sash
+ * @param {() => void=} _.onResizeStart
+ * @param {() => void=} _.onResizeEnd
+ * @param {string=}     _.className
+ * @param {any=}        _.style
+ * @param {any=}        _.children
  */
 export function Resizable({
   sash,
@@ -54,57 +56,86 @@ export function Resizable({
       const container = container$.current;
       if (!container) return;
 
-      let newHeight;
       switch (sash) {
         case "top": {
-          newHeight = container.getBoundingClientRect().bottom - e.clientY;
+          const newHeight =
+            container.getBoundingClientRect().bottom - e.clientY;
+          container.style.height = `${newHeight}px`;
+          break;
+        }
+
+        case "right": {
+          const newWidth = e.clientX - container.getBoundingClientRect().left;
+          container.style.width = `${newWidth}px`;
           break;
         }
 
         case "bottom": {
-          newHeight = e.clientY - container.getBoundingClientRect().top;
+          const newHeight = e.clientY - container.getBoundingClientRect().top;
+          container.style.height = `${newHeight}px`;
           break;
         }
 
-        default: {
-          return;
+        case "left": {
+          const newWidth = container.getBoundingClientRect().right - e.clientX;
+          container.style.width = `${newWidth}px`;
+          break;
         }
       }
-
-      container.style.height = `${newHeight}px`;
     },
     onResizeEnd,
   });
 
   return html`
-    <div ref=${container$} className=${className} style=${style}>
-      ${sash === "top" &&
-      html`
-        <div
-          ref=${handle$}
-          className=${css`
-            cursor: row-resize;
-            position: relative;
+    <div
+      ref=${container$}
+      className=${cx(
+        css`
+          position: relative;
+        `,
+        className
+      )}
+      style=${style}
+    >
+      <div
+        ref=${handle$}
+        className=${cx(
+          css`
+            position: absolute;
             z-index: 1;
-            height: 4px;
-            margin-bottom: -4px;
-          `}
-        ></div>
-      `}
+          `,
+          sash === "top" &&
+            css`
+              cursor: row-resize;
+              width: 100%;
+              height: 4px;
+              top: 0;
+            `,
+          sash === "right" &&
+            css`
+              cursor: col-resize;
+              width: 4px;
+              height: 100%;
+              right: 0;
+            `,
+          sash === "bottom" &&
+            css`
+              cursor: row-resize;
+              width: 100%;
+              height: 4px;
+              bottom: 0;
+            `,
+          sash === "left" &&
+            css`
+              cursor: col-resize;
+              width: 4px;
+              height: 100%;
+              left: 0;
+            `
+        )}
+      ></div>
+
       ${children}
-      ${sash === "bottom" &&
-      html`
-        <div
-          ref=${handle$}
-          className=${css`
-            cursor: row-resize;
-            position: relative;
-            z-index: 1;
-            height: 4px;
-            margin-top: -4px;
-          `}
-        ></div>
-      `}
     </div>
   `;
 }
@@ -126,15 +157,14 @@ export function useResizable(props) {
     onResizeEnd$.current = props.onResizeEnd;
   });
 
-  const isResizing$ = useRef(false);
-
   /** @type {{ current?: HTMLElement }} */
   const handle$ = useRef();
+  const isResizing$ = useRef(false);
+
   const handle = handle$.current;
   useEffect(() => {
-    if (!handle) return;
-
-    const view = handle.ownerDocument?.defaultView;
+    const view = handle?.ownerDocument?.defaultView;
+    if (!handle || !view) return;
 
     const onMouseDown = () => {
       if (isResizing$.current) return;
