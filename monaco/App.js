@@ -195,6 +195,7 @@ export function App() {
       <//>
 
       <${Resizable}
+        sash="bottom"
         onResizeStart=${() => {
           setIsResizing(true);
         }}
