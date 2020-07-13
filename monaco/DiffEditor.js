@@ -78,6 +78,9 @@ export function DiffEditor({
         css`
           border: solid 1px silver;
           border-right: none;
+
+          /* .monaco-sash がはみ出ないように */
+          z-index: 0;
         `,
         className
       )}
