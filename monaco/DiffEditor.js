@@ -12,7 +12,7 @@ import {
 const monaco = globalThis.monaco;
 
 /**
- * @param {object} _
+ * @param {object}  _
  * @param {string=} _.originalSrc
  * @param {string=} _.originalLang
  * @param {string=} _.modifiedSrc
@@ -42,7 +42,8 @@ export function DiffEditor({
     if (!diffEditor) return;
 
     const observer = new ResizeObserver(([entry]) => {
-      diffEditor.layout(entry.contentRect);
+      const { width, height } = entry.contentRect;
+      diffEditor.layout({ width, height });
     });
     observer.observe(diffEditor.getDomNode());
 

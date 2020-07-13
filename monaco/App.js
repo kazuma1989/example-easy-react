@@ -13,17 +13,15 @@ import { DiffEditor } from "./DiffEditor.js";
 import { Resizable } from "./Resizable.js";
 
 /**
+ * @typedef {object} State
+ * @property {number} currentIndex
+ * @property {DiffSrc[]} diffList
+ *
  * @typedef {object} DiffSrc
  * @property {string} title
  * @property {string} path
  * @property {string} lang
  * @property {string} preview
- */
-
-/**
- * @typedef {object} State
- * @property {number} currentIndex
- * @property {DiffSrc[]} diffList
  */
 
 /**
@@ -139,11 +137,13 @@ export function App() {
       });
     };
 
-    globalThis.addEventListener("hashchange", listener);
+    window.addEventListener("hashchange", listener);
     return () => {
-      globalThis.removeEventListener("hashchange", listener);
+      window.removeEventListener("hashchange", listener);
     };
   }, []);
+
+  const titleHeight = 32;
 
   return html`
     <div
@@ -152,7 +152,7 @@ export function App() {
           height: 100%;
           display: grid;
           grid-template:
-            "title-original title-modified title-spacer" 32px
+            "title-original title-modified title-spacer" ${titleHeight}px
             "diff diff diff" auto
             "preview-original preview-modified preview-spacer" 1fr
             / 1fr 1fr 30px;
@@ -177,8 +177,7 @@ export function App() {
           grid-area: title-original;
         `}
       >
-        ${arrowLeft} ${original?.title}
-        <span></span>
+        ${arrowLeft} ${original?.title} <span></span>
       <//>
 
       <${SrcTitle}
@@ -192,8 +191,7 @@ export function App() {
           grid-area: title-modified;
         `}
       >
-        <span></span>
-        ${modified?.title} ${arrowRight}
+        <span></span> ${modified?.title} ${arrowRight}
       <//>
 
       <${Resizable}
@@ -205,7 +203,9 @@ export function App() {
         }}
         className=${css`
           grid-area: diff;
-          height: 600px;
+          height: 70vh;
+          min-height: 16px;
+          max-height: calc(100vh - ${titleHeight}px - 16px);
         `}
       >
         <${DiffEditor}
@@ -223,6 +223,7 @@ export function App() {
         src=${original?.preview}
         className=${css`
           grid-area: preview-original;
+          min-height: 0;
         `}
       />
 
@@ -230,6 +231,7 @@ export function App() {
         src=${modified?.preview}
         className=${css`
           grid-area: preview-modified;
+          min-height: 0;
         `}
       />
     </div>
@@ -237,11 +239,11 @@ export function App() {
 }
 
 /**
- * @param {object} _
- * @param {boolean=} _.disabled
+ * @param {object}      _
+ * @param {boolean=}    _.disabled
  * @param {() => void=} _.onClick
- * @param {string=} _.className
- * @param {any=} _.children
+ * @param {string=}     _.className
+ * @param {any=}        _.children
  */
 function SrcTitle({ disabled, onClick, className, children }) {
   return html`
@@ -277,7 +279,7 @@ const arrowRight = html`
 `;
 
 /**
- * @param {object} _
+ * @param {object}  _
  * @param {string=} _.src
  * @param {string=} _.className
  */

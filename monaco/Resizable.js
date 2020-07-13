@@ -9,13 +9,20 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 /**
- * @param {object} _
+ * @param {object}      _
  * @param {() => void=} _.onResizeStart
  * @param {() => void=} _.onResizeEnd
- * @param {string=} _.className
- * @param {any=} _.children
+ * @param {string=}     _.className
+ * @param {any=}        _.style
+ * @param {any=}        _.children
  */
-export function Resizable({ onResizeStart, onResizeEnd, className, children }) {
+export function Resizable({
+  onResizeStart,
+  onResizeEnd,
+  className,
+  style,
+  children,
+}) {
   /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
   const isResizing$ = useRef(false);
@@ -75,11 +82,11 @@ export function Resizable({ onResizeStart, onResizeEnd, className, children }) {
   }, [container]);
 
   return html`
-    <div ref=${container$} className=${className}>
+    <div ref=${container$} className=${className} style=${style}>
       ${children}
 
       <div
-        onMouseDown=${(e) => {
+        onMouseDown=${() => {
           isResizing$.current = true;
 
           onResizeStart?.();
