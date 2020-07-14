@@ -11,6 +11,7 @@ import {
 import produce from "https://cdn.pika.dev/immer";
 import { DiffEditor } from "./DiffEditor.js";
 import { Resizable } from "./Resizable.js";
+import { Slide } from "./Slide.js";
 
 /**
  * @typedef {object} State
@@ -153,10 +154,10 @@ export function App() {
           height: 100%;
           display: grid;
           grid-template:
-            "title title-spacer" ${titleHeight}px
-            "diff diff" 1fr
-            "preview preview-spacer" auto
-            / 1fr ${rightGutter}px;
+            "slide title title-spacer" ${titleHeight}px
+            "slide diff diff" 1fr
+            "slide preview preview-spacer" auto
+            / auto 1fr ${rightGutter}px;
           align-items: stretch;
           justify-items: stretch;
         `,
@@ -167,6 +168,28 @@ export function App() {
           `
       )}
     >
+      <${Resizable}
+        sash="right"
+        onResizeStart=${() => {
+          setIsResizing(true);
+        }}
+        onResizeEnd=${() => {
+          setIsResizing(false);
+        }}
+        className=${css`
+          grid-area: slide;
+          width: 50vw;
+          min-width: 100px;
+          max-width: calc(100vw - ${rightGutter}px - 100px);
+        `}
+      >
+        <${Slide}
+          className=${css`
+            height: 100%;
+          `}
+        />
+      <//>
+
       <div
         className=${css`
           grid-area: title;
@@ -239,7 +262,7 @@ export function App() {
           className=${css`
             width: 50%;
             min-width: 100px;
-            max-width: calc(100vw - ${rightGutter}px - 100px);
+            max-width: calc(50vw - ${rightGutter}px - 100px);
           `}
         >
           <${Iframe}
