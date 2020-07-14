@@ -14,21 +14,46 @@ import { Resizable } from "./Resizable.js";
 import { Slide } from "./Slide.js";
 
 /**
- * @typedef {object} State
- * @property {number} currentIndex
- * @property {DiffSrc[]} diffList
- *
- * @typedef {object} DiffSrc
- * @property {string} title
- * @property {string} path
- * @property {string} lang
- * @property {string} preview
+@typedef {
+  {
+    currentIndex: number
+    diffList: {
+      title: string
+      path: string
+      lang: string
+      preview: string
+    }[]
+  }
+} State
  */
 
 /**
- * @typedef {object} Action
- * @property {'prev' | 'next' | 'set-diff-list' | 'set-hash'} type
- * @property {any=} payload
+@typedef {
+  | {
+    type: 'prev'
+  }
+  | {
+    type: 'next'
+  }
+  | {
+    type: 'set-index'
+    payload: {
+      index: number
+    }
+  }
+  | {
+    type: 'set-diff-list'
+    payload: {
+      diffList: any[]
+    }
+  }
+  | {
+    type: 'set-hash'
+    payload: {
+      hash: string
+    }
+  }
+} Action
  */
 
 const reducer = produce(
@@ -49,6 +74,15 @@ const reducer = produce(
         if (draft.currentIndex >= draft.diffList.length - 2) return;
 
         draft.currentIndex += 1;
+        return;
+      }
+
+      case "set-index": {
+        const { index } = action.payload;
+
+        if (0 <= index && index <= draft.diffList.length - 2) {
+          draft.currentIndex = index;
+        }
         return;
       }
 
@@ -185,10 +219,14 @@ export function App() {
       >
         <${Slide}
           url="/slides.md"
-          onChange=${console.log}
-          className=${css`
-            height: 100%;
-          `}
+          onChange=${(next) => {
+            dispatch({
+              type: "set-index",
+              payload: {
+                index: next.h,
+              },
+            });
+          }}
         />
       <//>
 

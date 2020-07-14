@@ -13,11 +13,15 @@ import Highlight from "https://unpkg.com/reveal.js/plugin/highlight/highlight.es
 import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.js";
 
 /**
- * @param {object}               _
- * @param {string=}              _.url
- * @param {(h: number) => void=} _.onChange
- * @param {string=}              _.className
- * @param {any=}                 _.style
+ * @typedef {object} Index
+ * @property {number} h
+ * @property {number} v
+ *
+ * @param {object}                              _
+ * @param {string=}                             _.url
+ * @param {(next: Index, prev: Index) => void=} _.onChange
+ * @param {string=}                             _.className
+ * @param {any=}                                _.style
  */
 export function Slide({ url, onChange: _onChange, className, style }) {
   const onChange$ = useRef(_onChange);
@@ -34,10 +38,12 @@ export function Slide({ url, onChange: _onChange, className, style }) {
     () =>
       container
         ? new Reveal(container, {
+            // コンポーネント外に影響を及ぼさないため必須の設定
             embedded: true,
-            keyboardCondition: "focused", // only react to keys when focused
+            keyboardCondition: "focused",
+            respondToHashChanges: false,
+
             controlsLayout: "bottom-right",
-            slideNumber: "c/t",
             transitionSpeed: "fast",
           })
         : undefined,
@@ -61,16 +67,16 @@ export function Slide({ url, onChange: _onChange, className, style }) {
     };
   }, [reveal]);
 
-  const indexh$ = useRef(0);
+  const index$ = useRef({ h: 0, v: 0 });
   useEffect(() => {
     if (!reveal) return;
 
-    const onSlideChanged = (e) => {
-      const { indexh } = e;
-      if (indexh === indexh$.current) return;
+    const onSlideChanged = ({ indexh: h, indexv: v }) => {
+      const prev = index$.current;
+      const next = { h, v };
+      index$.current = next;
 
-      indexh$.current = indexh;
-      onChange$.current?.(indexh);
+      onChange$.current?.(next, prev);
     };
     reveal.on("slidechanged", onSlideChanged);
 
