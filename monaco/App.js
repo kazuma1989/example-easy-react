@@ -14,8 +14,7 @@ import { Resizable } from "./Resizable.js";
 import { Slide } from "./Slide.js";
 
 /**
-@typedef {
-  {
+ * @typedef {{
     currentIndex: number
     diffList: {
       title: string
@@ -23,37 +22,36 @@ import { Slide } from "./Slide.js";
       lang: string
       preview: string
     }[]
-  }
-} State
+  }} State
  */
 
 /**
-@typedef {
-  | {
-    type: 'prev'
-  }
-  | {
-    type: 'next'
-  }
-  | {
-    type: 'set-index'
-    payload: {
-      index: number
+ * @typedef {
+    | {
+      type: 'prev'
     }
-  }
-  | {
-    type: 'set-diff-list'
-    payload: {
-      diffList: any[]
+    | {
+      type: 'next'
     }
-  }
-  | {
-    type: 'set-hash'
-    payload: {
-      hash: string
+    | {
+      type: 'set-index'
+      payload: {
+        index: number
+      }
     }
-  }
-} Action
+    | {
+      type: 'set-diff-list'
+      payload: {
+        diffList: any[]
+      }
+    }
+    | {
+      type: 'set-hash'
+      payload: {
+        hash: string
+      }
+    }
+  } Action
  */
 
 const reducer = produce(
@@ -117,6 +115,7 @@ const selector = ({ currentIndex, diffList }) => {
   const nextDisabled = currentIndex >= diffList.length - 2;
 
   return {
+    indexh: currentIndex,
     hash: `#${currentIndex}`,
     original,
     modified,
@@ -132,9 +131,14 @@ export function App() {
     currentIndex: initialIndex,
     diffList: [],
   });
-  const { hash, original, modified, prevDisabled, nextDisabled } = selector(
-    _state
-  );
+  const {
+    indexh,
+    hash,
+    original,
+    modified,
+    prevDisabled,
+    nextDisabled,
+  } = selector(_state);
 
   const [isResizing, setIsResizing] = useState(false);
 
@@ -219,6 +223,7 @@ export function App() {
       >
         <${Slide}
           url="/slides.md"
+          indexh=${indexh}
           onChange=${(next) => {
             dispatch({
               type: "set-index",
