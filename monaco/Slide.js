@@ -14,11 +14,12 @@ import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.j
 
 /**
  * @param {object}               _
+ * @param {string=}              _.url
  * @param {(h: number) => void=} _.onChange
  * @param {string=}              _.className
  * @param {any=}                 _.style
  */
-export function Slide({ onChange: _onChange, className, style }) {
+export function Slide({ url, onChange: _onChange, className, style }) {
   const onChange$ = useRef(_onChange);
 
   useEffect(() => {
@@ -81,35 +82,11 @@ export function Slide({ onChange: _onChange, className, style }) {
   return html`
     <div ref=${container$} className=${cx(className, "reveal")} style=${style}>
       <div className="slides">
-        <section
-          data-markdown=""
+        <div
+          data-markdown=${url}
           data-separator="==="
           data-separator-vertical="---"
-        >
-          <textarea type="text/markdown">
-## Demo 1
-
-Slide 1
-
-note: xxxxxxxx
-
-===
-
-## Demo 1
-
-Slide 2
-
----
-
-## Demo 1
-
-- z
-- b
-
-Slide 3
-          </textarea
-          >
-        </section>
+        ></div>
       </div>
     </div>
   `;
