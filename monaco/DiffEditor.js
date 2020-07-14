@@ -17,6 +17,7 @@ const monaco = globalThis.monaco;
  * @param {string=} _.originalLang
  * @param {string=} _.modifiedSrc
  * @param {string=} _.modifiedLang
+ * @param {number=} _.fontSize
  * @param {string=} _.className
  * @param {any=}    _.style
  */
@@ -25,19 +26,24 @@ export function DiffEditor({
   originalLang,
   modifiedSrc,
   modifiedLang,
+  fontSize = 16,
   style,
   className,
 }) {
   /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
+  const container = container$.current;
+
   const diffEditor = useMemo(
     () =>
-      container$.current
-        ? monaco.editor.createDiffEditor(container$.current, {
+      container
+        ? monaco.editor.createDiffEditor(container, {
             readOnly: true,
+            scrollBeyondLastLine: false,
+            fontSize,
           })
         : undefined,
-    [container$.current]
+    [container, fontSize]
   );
 
   useEffect(() => {
