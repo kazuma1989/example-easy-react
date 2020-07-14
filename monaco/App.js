@@ -312,6 +312,7 @@ function SrcTitle({ disabled, onClick, className, children }) {
           align-items: center;
           justify-content: space-between;
           font-size: 14px;
+          padding: 0 8px;
         `,
         className
       )}
