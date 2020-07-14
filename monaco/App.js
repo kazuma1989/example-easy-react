@@ -10,6 +10,7 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 import produce from "https://cdn.pika.dev/immer";
 import { DiffEditor } from "./DiffEditor.js";
+import { Iframe } from "./Iframe.js";
 import { Resizable } from "./Resizable.js";
 import { Slide } from "./Slide.js";
 
@@ -308,6 +309,7 @@ export function App() {
             width: 50%;
             min-width: 100px;
             max-width: calc(50vw - ${rightGutter}px - 100px);
+            border-left: solid 1px silver;
           `}
         >
           <${Iframe}
@@ -322,6 +324,8 @@ export function App() {
           className=${css`
             flex-grow: 1;
             flex-basis: 0;
+            border-left: solid 1px silver;
+            border-right: solid 1px silver;
           `}
         >
           <${Iframe}
@@ -376,72 +380,3 @@ const arrowRight = html`
     <polygon points="0,0 0,100 50,50" />
   </svg>
 `;
-
-/**
- * @param {object}  _
- * @param {string=} _.src
- * @param {string=} _.className
- * @param {any=}    _.style
- */
-function Iframe({ src: loadingSrc, className, style }) {
-  const [activeSrc, setActiveSrc] = useState("");
-  const loading = activeSrc !== loadingSrc;
-
-  return html`
-    <div
-      className=${cx(
-        loading &&
-          css`
-            opacity: 0.7;
-            pointer-events: none;
-          `,
-        css`
-          transition: opacity 0.4s;
-        `,
-        className
-      )}
-      style=${style}
-    >
-      <iframe
-        key=${activeSrc}
-        ref=${// Monaco Editor が強制してくるので、レンダリングの都度打ち消す
-        clearStyle("pointerEvents")}
-        src=${activeSrc}
-        className=${css`
-          border: solid 1px silver;
-          display: block;
-          width: 100%;
-          height: 100%;
-          min-width: 0;
-          min-height: 0;
-        `}
-      ></iframe>
-
-      ${loading &&
-      // display: none の状態でコンテンツを読み込み始め、完了したら古い iframe と入れ替える。
-      // そうすることで、src が変わるタイミングで一瞬白く見えてしまうのを防げる。
-      html`
-        <iframe
-          key=${loadingSrc}
-          src=${loadingSrc}
-          onLoad=${() => {
-            setActiveSrc(loadingSrc);
-          }}
-          className=${css`
-            display: none;
-          `}
-        ></iframe>
-      `}
-    </div>
-  `;
-}
-
-/**
- * @param {Exclude<keyof HTMLElement['style'], 'length' | 'parentRule'>} key
- * @returns {(e: HTMLElement) => void}
- */
-const clearStyle = (key) => (e) => {
-  if (!e) return;
-
-  e.style[key] = null;
-};
