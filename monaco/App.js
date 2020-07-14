@@ -184,6 +184,7 @@ export function App() {
         `}
       >
         <${Slide}
+          onChange=${console.log}
           className=${css`
             height: 100%;
           `}
