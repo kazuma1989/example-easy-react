@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="./typings.d.ts" />
 
-import { css, cx } from "https://cdn.pika.dev/emotion";
+import { css, cx, keyframes } from "https://cdn.pika.dev/emotion";
 import {
   html,
   useState,
@@ -28,6 +28,17 @@ export function Iframe({ src: loadingSrc, className, style }) {
       )}
       style=${style}
     >
+      ${loading &&
+      html`
+        <${Progress}
+          className=${css`
+            color: #2a76dd;
+            height: 4px;
+            margin-bottom: -4px;
+          `}
+        />
+      `}
+
       <iframe
         key=${activeSrc}
         ref=${// Monaco Editor が強制してくるので、レンダリングの都度打ち消す
@@ -71,3 +82,41 @@ const clearStyle = (key) => (e) => {
 
   e.style[key] = null;
 };
+
+/**
+ * @param {{
+    className?: string
+    style?: any
+  }} _
+ */
+function Progress({ className, style }) {
+  return html`
+    <div
+      className=${cx(
+        css`
+          height: 4px;
+          overflow: hidden;
+
+          ::after {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: currentColor;
+
+            transform: translateX(-100%);
+            animation: 1.5s ease-out 0.5s infinite ${keyframes`
+                from {
+                  transform: translateX(-100%);
+                }
+                to {
+                  transform: translateX(100%);
+                }`};
+          }
+        `,
+        className
+      )}
+      style=${style}
+    ></div>
+  `;
+}
