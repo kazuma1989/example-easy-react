@@ -19,9 +19,16 @@ import { Slide } from "./Slide.js";
     currentIndex: number
     diffList: {
       title: string
-      path: string
-      lang: string
-      preview: string
+      original: {
+        src: string
+        lang: string
+        preview: string
+      }
+      modified: {
+        src: string
+        lang: string
+        preview: string
+      }
     }[]
   }} State
  */
@@ -46,12 +53,6 @@ import { Slide } from "./Slide.js";
         diffList: any[]
       }
     }
-    | {
-      type: 'set-hash'
-      payload: {
-        hash: string
-      }
-    }
   } Action
  */
 
@@ -62,15 +63,28 @@ const reducer = produce(
    */
   (draft, action) => {
     switch (action?.type) {
+      case "set-diff-list": {
+        const { diffList } = action.payload;
+
+        draft.diffList = diffList;
+        return;
+      }
+
       case "prev": {
-        if (draft.currentIndex <= 0) return;
+        if (draft.currentIndex <= 0) {
+          draft.currentIndex = 0;
+          return;
+        }
 
         draft.currentIndex -= 1;
         return;
       }
 
       case "next": {
-        if (draft.currentIndex >= draft.diffList.length - 2) return;
+        if (draft.currentIndex >= draft.diffList.length - 1) {
+          draft.currentIndex = draft.diffList.length - 1;
+          return;
+        }
 
         draft.currentIndex += 1;
         return;
@@ -79,27 +93,8 @@ const reducer = produce(
       case "set-index": {
         const { index } = action.payload;
 
-        if (0 <= index && index <= draft.diffList.length - 2) {
+        if (0 <= index && index <= draft.diffList.length - 1) {
           draft.currentIndex = index;
-        }
-        return;
-      }
-
-      case "set-diff-list": {
-        const { diffList } = action.payload;
-
-        draft.diffList = diffList;
-        return;
-      }
-
-      case "set-hash": {
-        const { hash } = action.payload;
-
-        const maybeNewIndex = parseInt(hash.slice(1));
-        if (isNaN(maybeNewIndex)) return;
-
-        if (0 <= maybeNewIndex && maybeNewIndex <= draft.diffList.length - 2) {
-          draft.currentIndex = maybeNewIndex;
         }
         return;
       }
@@ -109,11 +104,10 @@ const reducer = produce(
 
 /** @param {State} _ */
 const selector = ({ currentIndex, diffList }) => {
-  const original = diffList[currentIndex];
-  const modified = diffList[currentIndex + 1];
+  const { title, original, modified } = diffList[currentIndex] ?? {};
 
   const prevDisabled = currentIndex <= 0;
-  const nextDisabled = currentIndex >= diffList.length - 2;
+  const nextDisabled = currentIndex >= diffList.length - 1;
 
   return {
     indexh: currentIndex,
@@ -155,9 +149,9 @@ export function App() {
         });
 
         dispatch({
-          type: "set-hash",
+          type: "set-index",
           payload: {
-            hash: location.hash,
+            index: parseInt(location.hash?.slice(1)),
           },
         });
       });
@@ -170,9 +164,9 @@ export function App() {
   useEffect(() => {
     const listener = () => {
       dispatch({
-        type: "set-hash",
+        type: "set-index",
         payload: {
-          hash: location.hash,
+          index: parseInt(location.hash?.slice(1)),
         },
       });
     };
@@ -253,7 +247,7 @@ export function App() {
             width: 50%;
           `}
         >
-          ${arrowLeft} ${original?.title} <span></span>
+          ${arrowLeft} ${original?.src} <span></span>
         <//>
 
         <${SrcTitle}
@@ -267,14 +261,14 @@ export function App() {
             width: 50%;
           `}
         >
-          <span></span> ${modified?.title} ${arrowRight}
+          <span></span> ${modified?.src} ${arrowRight}
         <//>
       </div>
 
       <${DiffEditor}
-        originalSrc=${original?.path}
+        originalSrc=${original?.src}
         originalLang=${original?.lang}
-        modifiedSrc=${modified?.path}
+        modifiedSrc=${modified?.src}
         modifiedLang=${modified?.lang}
         className=${css`
           grid-area: diff;

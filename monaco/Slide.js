@@ -21,12 +21,22 @@ import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.j
  * @param {{
     url: string
     indexh: number
+    separator?: string
+    separatorVertical?: string
     onChange?(next: Index): void
     className?: string
     style?: any
   }} _
  */
-export function Slide({ url, indexh, onChange: _onChange, className, style }) {
+export function Slide({
+  url,
+  indexh,
+  separator = "---",
+  separatorVertical = "",
+  onChange: _onChange,
+  className,
+  style,
+}) {
   const indexh$ = useRef(indexh);
   const onChange$ = useRef(_onChange);
 
@@ -86,8 +96,8 @@ export function Slide({ url, indexh, onChange: _onChange, className, style }) {
       <div className="slides">
         <div
           data-markdown=${url}
-          data-separator="==="
-          data-separator-vertical="---"
+          data-separator=${separator}
+          data-separator-vertical=${separatorVertical}
         ></div>
       </div>
     </div>

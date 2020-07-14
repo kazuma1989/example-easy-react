@@ -1,71 +1,29 @@
 [
   {
-    "title": "part 0",
-    "path": "/part_0/index.js",
-    "lang": "javascript",
-    "preview": "/part_0/index.html"
+    "title": "part 0 / 1",
+    "original": {
+      "src": "/part_0/index.html",
+      "lang": "html",
+      "preview": "/part_0/"
+    },
+    "modified": {
+      "src": "/part_1/index.html",
+      "lang": "html",
+      "preview": "/part_1/"
+    }
   },
 
   {
-    "title": "part 1",
-    "path": "/part_1/index.js",
-    "lang": "javascript",
-    "preview": "/part_1/index.html"
-  },
-
-  {
-    "title": "part 2",
-    "path": "/part_2/index.js",
-    "lang": "javascript",
-    "preview": "/part_2/index.html"
-  },
-
-  {
-    "title": "part 3",
-    "path": "/part_3/index.js",
-    "lang": "javascript",
-    "preview": "/part_3/index.html"
-  },
-
-  {
-    "title": "part 4",
-    "path": "/part_4/index.js",
-    "lang": "javascript",
-    "preview": "/part_4/index.html"
-  },
-
-  {
-    "title": "react 0",
-    "path": "/react_0/index.js",
-    "lang": "javascript",
-    "preview": "/react_0/index.html"
-  },
-
-  {
-    "title": "react 1",
-    "path": "/react_1/index.js",
-    "lang": "javascript",
-    "preview": "/react_1/index.html"
-  },
-
-  {
-    "title": "react 2",
-    "path": "/react_2/index.js",
-    "lang": "javascript",
-    "preview": "/react_2/index.html"
-  },
-
-  {
-    "title": "react 3",
-    "path": "/react_3/index.js",
-    "lang": "javascript",
-    "preview": "/react_3/index.html"
-  },
-
-  {
-    "title": "react 4",
-    "path": "/react_4/index.js",
-    "lang": "javascript",
-    "preview": "/react_4/index.html"
+    "title": "part 0 / 1",
+    "original": {
+      "src": "/part_0/index.js",
+      "lang": "javascript",
+      "preview": "/part_0/"
+    },
+    "modified": {
+      "src": "/part_1/index.js",
+      "lang": "javascript",
+      "preview": "/part_1/"
+    }
   }
 ]
