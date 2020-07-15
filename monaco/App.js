@@ -109,7 +109,7 @@ export function App(props) {
   const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
-    fetch("/diff-list.json")
+    fetch("./diff-list.json")
       .then((r) => r.json())
       .then((diffList) => {
         dispatch({
@@ -196,7 +196,7 @@ export function App(props) {
         `}
       >
         <${Slide}
-          url="/slides.md"
+          url="./slides.md"
           indexh=${indexh}
           separatorVertical="==="
           options=${{

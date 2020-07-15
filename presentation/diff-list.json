@@ -2,28 +2,28 @@
   {
     "title": "index.html",
     "original": {
-      "src": "/part_0/index.html",
+      "src": "./part_0/index.html",
       "lang": "html",
-      "preview": "/part_0/"
+      "preview": "./part_0/"
     },
     "modified": {
-      "src": "/part_1/index.html",
+      "src": "./part_1/index.html",
       "lang": "html",
-      "preview": "/part_1/"
+      "preview": "./part_1/"
     }
   },
 
   {
     "title": "index.js",
     "original": {
-      "src": "/part_0/index.js",
+      "src": "./part_0/index.js",
       "lang": "javascript",
-      "preview": "/part_0/"
+      "preview": "./part_0/"
     },
     "modified": {
-      "src": "/part_1/index.js",
+      "src": "./part_1/index.js",
       "lang": "javascript",
-      "preview": "/part_1/"
+      "preview": "./part_1/"
     }
   }
 ]
