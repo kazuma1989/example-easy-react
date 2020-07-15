@@ -12,6 +12,7 @@ import {
 import Reveal from "https://unpkg.com/reveal.js/dist/reveal.esm.js";
 import Highlight from "https://unpkg.com/reveal.js/plugin/highlight/highlight.esm.js";
 import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.js";
+import { shallowEqual } from "./util.js";
 
 /**
  * @typedef {{
@@ -23,6 +24,12 @@ import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.j
     indexh: number
     separator?: string
     separatorVertical?: string
+    options?: {
+      keyboardCondition?: unknown
+      controlsLayout?: unknown
+      transitionSpeed?: unknown
+      navigationMode?: unknown
+    }
     onChange?(next: Index): void
     className?: string
     style?: any
@@ -34,6 +41,7 @@ export function Slide(props) {
     indexh,
     separator = "---",
     separatorVertical = "",
+    options,
     onChange: _onChange,
     className,
     style,
@@ -50,6 +58,16 @@ export function Slide(props) {
   /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
   const reveal = useReveal(container$.current);
+
+  const prevOptions$ = useRef();
+  useEffect(() => {
+    if (!reveal || !options) return;
+    if (shallowEqual(options, prevOptions$.current)) return;
+
+    prevOptions$.current = options;
+
+    reveal.configure(options);
+  }, [reveal, options]);
 
   useEffect(() => {
     if (!reveal) return;
@@ -118,11 +136,7 @@ function useReveal(container) {
         ? new Reveal(container, {
             // コンポーネント外に影響を及ぼさないため必須の設定
             embedded: true,
-            keyboardCondition: "focused",
             respondToHashChanges: false,
-
-            controlsLayout: "bottom-right",
-            transitionSpeed: "fast",
           })
         : undefined,
     [container]

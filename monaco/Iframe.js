@@ -6,6 +6,7 @@ import {
   html,
   useState,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
+import { clearStyle } from "./util.js";
 
 /**
   * @param {{
@@ -75,16 +76,6 @@ export function Iframe(props) {
     </div>
   `;
 }
-
-/**
- * @param {Exclude<keyof HTMLElement['style'], 'length' | 'parentRule'>} key
- * @returns {(e: HTMLElement) => void}
- */
-const clearStyle = (key) => (e) => {
-  if (!e) return;
-
-  e.style[key] = null;
-};
 
 /**
  * @param {{

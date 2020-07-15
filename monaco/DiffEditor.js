@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
+import { shallowEqual } from "./util.js";
 
 const monaco = globalThis.monaco;
 
@@ -107,20 +108,4 @@ export function DiffEditor(props) {
       style=${style}
     ></div>
   `;
-}
-
-/**
- * @param {object} a
- * @param {object} b
- */
-function shallowEqual(a, b) {
-  if (a === b) {
-    return true;
-  }
-
-  if (typeof a !== "object" || typeof b !== "object") {
-    return a === b;
-  }
-
-  return Object.keys(a).every((k) => a[k] === b[k]);
 }

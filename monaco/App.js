@@ -185,6 +185,13 @@ export function App() {
         <${Slide}
           url="/slides.md"
           indexh=${indexh}
+          separatorVertical="==="
+          options=${{
+            // keyboardCondition: "focused",
+            controlsLayout: "bottom-right",
+            transitionSpeed: "fast",
+            navigationMode: "linear",
+          }}
           onChange=${(next) => {
             dispatch({
               type: "set-index",
