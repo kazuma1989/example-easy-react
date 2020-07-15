@@ -103,19 +103,15 @@ const reducer = produce(
 );
 
 /** @param {State} _ */
-const selector = ({ currentIndex, diffList }) => {
+const computed = ({ currentIndex, diffList }) => {
   const { title, original, modified } = diffList[currentIndex] ?? {};
-
-  const prevDisabled = currentIndex <= 0;
-  const nextDisabled = currentIndex >= diffList.length - 1;
 
   return {
     indexh: currentIndex,
     hash: `#${currentIndex}`,
+    title,
     original,
     modified,
-    prevDisabled,
-    nextDisabled,
   };
 };
 
@@ -126,14 +122,7 @@ export function App() {
     currentIndex: initialIndex,
     diffList: [],
   });
-  const {
-    indexh,
-    hash,
-    original,
-    modified,
-    prevDisabled,
-    nextDisabled,
-  } = selector(_state);
+  const { indexh, hash, title, original, modified } = computed(_state);
 
   const [isResizing, setIsResizing] = useState(false);
 
@@ -177,8 +166,10 @@ export function App() {
     };
   }, []);
 
-  const titleHeight = 32;
+  const titleHeight = 24;
   const rightGutter = 30;
+
+  const [fontSize, setFontSize] = useState(16);
 
   return html`
     <div
@@ -233,36 +224,13 @@ export function App() {
       <div
         className=${css`
           grid-area: title;
+          border-left: solid 1px silver;
           display: flex;
+          align-items: center;
+          justify-content: center;
         `}
       >
-        <${SrcTitle}
-          disabled=${prevDisabled}
-          onClick=${() => {
-            dispatch({
-              type: "prev",
-            });
-          }}
-          className=${css`
-            width: 50%;
-          `}
-        >
-          ${arrowLeft} ${original?.src} <span></span>
-        <//>
-
-        <${SrcTitle}
-          disabled=${nextDisabled}
-          onClick=${() => {
-            dispatch({
-              type: "next",
-            });
-          }}
-          className=${css`
-            width: 50%;
-          `}
-        >
-          <span></span> ${modified?.src} ${arrowRight}
-        <//>
+        ${title}
       </div>
 
       <${DiffEditor}
@@ -270,8 +238,13 @@ export function App() {
         originalLang=${original?.lang}
         modifiedSrc=${modified?.src}
         modifiedLang=${modified?.lang}
+        options=${{
+          fontSize,
+        }}
         className=${css`
           grid-area: diff;
+          border: solid 1px silver;
+          border-right: none;
         `}
       />
 
@@ -333,44 +306,3 @@ export function App() {
     </div>
   `;
 }
-
-/**
- * @param {object}      _
- * @param {boolean=}    _.disabled
- * @param {() => void=} _.onClick
- * @param {string=}     _.className
- * @param {any=}        _.children
- */
-function SrcTitle({ disabled, onClick, className, children }) {
-  return html`
-    <button
-      disabled=${disabled}
-      onClick=${onClick}
-      className=${cx(
-        css`
-          border: solid 1px silver;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 14px;
-          padding: 0 8px;
-        `,
-        className
-      )}
-    >
-      ${children}
-    </button>
-  `;
-}
-
-const arrowLeft = html`
-  <svg viewBox="0 0 50 100" style="fill: currentColor; height: 1em;">
-    <polygon points="50,0 50,100 0,50" />
-  </svg>
-`;
-
-const arrowRight = html`
-  <svg viewBox="0 0 50 100" style="fill: currentColor; height: 1em;">
-    <polygon points="0,0 0,100 50,50" />
-  </svg>
-`;

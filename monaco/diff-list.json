@@ -1,6 +1,6 @@
 [
   {
-    "title": "part 0 / 1",
+    "title": "index.html",
     "original": {
       "src": "/part_0/index.html",
       "lang": "html",
@@ -14,7 +14,7 @@
   },
 
   {
-    "title": "part 0 / 1",
+    "title": "index.js",
     "original": {
       "src": "/part_0/index.js",
       "lang": "javascript",

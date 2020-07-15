@@ -26,7 +26,7 @@ import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.j
     onChange?(next: Index): void
     className?: string
     style?: any
-  }} _
+  }} props
  */
 export function Slide({
   url,

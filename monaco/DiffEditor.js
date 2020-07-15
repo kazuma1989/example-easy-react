@@ -12,24 +12,32 @@ import {
 const monaco = globalThis.monaco;
 
 /**
- * @param {object}  _
- * @param {string=} _.originalSrc
- * @param {string=} _.originalLang
- * @param {string=} _.modifiedSrc
- * @param {string=} _.modifiedLang
- * @param {number=} _.fontSize
- * @param {string=} _.className
- * @param {any=}    _.style
+ * @param {{
+    originalSrc?: string
+    originalLang?: string
+    modifiedSrc?: string
+    modifiedLang?: string
+    options?: {
+      fontSize?: number
+      lineNumbersMinChars?: number
+      scrollBeyondLastLine?: boolean
+      renderSideBySide?: string
+    }
+    className?: string
+    style?: any
+  }} props
  */
-export function DiffEditor({
-  originalSrc,
-  originalLang,
-  modifiedSrc,
-  modifiedLang,
-  fontSize = 16,
-  style,
-  className,
-}) {
+export function DiffEditor(props) {
+  const {
+    originalSrc,
+    originalLang,
+    modifiedSrc,
+    modifiedLang,
+    options,
+    className,
+    style,
+  } = props;
+
   /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
   const container = container$.current;
@@ -39,12 +47,20 @@ export function DiffEditor({
       container
         ? monaco.editor.createDiffEditor(container, {
             readOnly: true,
-            scrollBeyondLastLine: false,
-            fontSize,
           })
         : undefined,
-    [container, fontSize]
+    [container]
   );
+
+  const prevOptions$ = useRef();
+  useEffect(() => {
+    if (!diffEditor || !options) return;
+    if (shallowEqual(options, prevOptions$.current)) return;
+
+    prevOptions$.current = options;
+
+    diffEditor.updateOptions(options);
+  }, [diffEditor, options]);
 
   useEffect(() => {
     if (!diffEditor) return;
@@ -82,9 +98,6 @@ export function DiffEditor({
       ref=${container$}
       className=${cx(
         css`
-          border: solid 1px silver;
-          border-right: none;
-
           /* .monaco-sash がはみ出ないように */
           z-index: 0;
         `,
@@ -93,4 +106,20 @@ export function DiffEditor({
       style=${style}
     ></div>
   `;
+}
+
+/**
+ * @param {object} a
+ * @param {object} b
+ */
+function shallowEqual(a, b) {
+  if (a === b) {
+    return true;
+  }
+
+  if (typeof a !== "object" || typeof b !== "object") {
+    return a === b;
+  }
+
+  return Object.keys(a).every((k) => a[k] === b[k]);
 }
