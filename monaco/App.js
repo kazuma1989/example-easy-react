@@ -218,7 +218,7 @@ export function App() {
             display: flex;
           `}
         >
-          ${renderSideBySide ? iconSplitNone : iconSplitVertical}
+          ${renderSideBySide ? iconSplitVertical : iconSplitNone}
         </button>
 
         <div>${title}</div>
@@ -364,7 +364,10 @@ const iconSplitVertical = html`
     style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
   >
     <rect x="3" y="3" width="94" height="94" />
-    <polyline points="50,0 50,100" />
+
+    <polyline points="14,26 86,26" stroke-dasharray="28 16 28" />
+    <polyline points="14,40 86,40" stroke-dasharray="28 16 28" />
+    <polyline points="14,54 86,54" stroke-dasharray="28 16 12 8 8" />
   </svg>
 `;
 
@@ -374,5 +377,9 @@ const iconSplitNone = html`
     style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
   >
     <rect x="3" y="3" width="94" height="94" />
+
+    <polyline points="14,26 86,26" stroke-dasharray="36 0 36" />
+    <polyline points="14,40 86,40" stroke-dasharray="36 0 36" />
+    <polyline points="14,54 86,54" stroke-dasharray="36 0 20 8 8" />
   </svg>
 `;
