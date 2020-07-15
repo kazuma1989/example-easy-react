@@ -87,6 +87,8 @@ export function Resizable(props) {
     onResizeEnd,
   });
 
+  const clickCount$ = useRef(0);
+
   return html`
     <div
       ref=${container$}
@@ -100,6 +102,31 @@ export function Resizable(props) {
     >
       <div
         ref=${handle$}
+        onMouseDown=${() => {
+          clickCount$.current += 1;
+          setTimeout(() => {
+            clickCount$.current -= 1;
+          }, 400);
+
+          if (clickCount$.current !== 2) return;
+
+          const container = container$.current;
+          if (!container) return;
+
+          switch (sash) {
+            case "top":
+            case "bottom": {
+              container.style.height = null;
+              break;
+            }
+
+            case "right":
+            case "left": {
+              container.style.width = null;
+              break;
+            }
+          }
+        }}
         className=${cx(
           css`
             position: absolute;
@@ -142,10 +169,11 @@ export function Resizable(props) {
 }
 
 /**
- * @param {object}                   props
- * @param {() => void=}              props.onResizeStart
- * @param {(e: MouseEvent) => void=} props.onResize
- * @param {() => void=}              props.onResizeEnd
+ * @param {{
+    onResizeStart?(): void
+    onResize?(e: MouseEvent): void
+    onResizeEnd?(): void
+  }} props
  */
 export function useResizable(props) {
   const onResizeStart$ = useRef(props.onResizeStart);
@@ -158,16 +186,16 @@ export function useResizable(props) {
     onResizeEnd$.current = props.onResizeEnd;
   });
 
-  /** @type {{ current?: HTMLElement }} */
-  const handle$ = useRef();
   const isResizing$ = useRef(false);
 
+  /** @type {{ current?: HTMLElement }} */
+  const handle$ = useRef();
   const handle = handle$.current;
   useEffect(() => {
     const view = handle?.ownerDocument?.defaultView;
     if (!handle || !view) return;
 
-    const onMouseDown = () => {
+    const resizeStart = () => {
       if (isResizing$.current) return;
 
       isResizing$.current = true;
@@ -182,7 +210,7 @@ export function useResizable(props) {
       onResize$.current?.(e);
     };
 
-    const onMouseUp = () => {
+    const resizeEnd = () => {
       if (!isResizing$.current) return;
 
       isResizing$.current = false;
@@ -190,20 +218,20 @@ export function useResizable(props) {
       onResizeEnd$.current?.();
     };
 
-    handle.addEventListener("mousedown", onMouseDown);
+    handle.addEventListener("mousedown", resizeStart);
 
     view.addEventListener("mousemove", resize);
 
-    view.addEventListener("mouseup", onMouseUp);
-    view.addEventListener("mouseleave", onMouseUp);
+    view.addEventListener("mouseup", resizeEnd);
+    view.addEventListener("mouseleave", resizeEnd);
 
     return () => {
-      handle.removeEventListener("mousedown", onMouseDown);
+      handle.removeEventListener("mousedown", resizeStart);
 
       view.removeEventListener("mousemove", resize);
 
-      view.removeEventListener("mouseup", onMouseUp);
-      view.removeEventListener("mouseleave", onMouseUp);
+      view.removeEventListener("mouseup", resizeEnd);
+      view.removeEventListener("mouseleave", resizeEnd);
     };
   }, [handle]);
 
