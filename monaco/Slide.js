@@ -28,15 +28,17 @@ import Markdown from "https://unpkg.com/reveal.js/plugin/markdown/markdown.esm.j
     style?: any
   }} props
  */
-export function Slide({
-  url,
-  indexh,
-  separator = "---",
-  separatorVertical = "",
-  onChange: _onChange,
-  className,
-  style,
-}) {
+export function Slide(props) {
+  const {
+    url,
+    indexh,
+    separator = "---",
+    separatorVertical = "",
+    onChange: _onChange,
+    className,
+    style,
+  } = props;
+
   const indexh$ = useRef(indexh);
   const onChange$ = useRef(_onChange);
 

@@ -9,24 +9,25 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 /**
- * @typedef {'top' | 'right' | 'bottom' | 'left'} Sash
- *
- * @param {object}      _
- * @param {Sash}        _.sash
- * @param {() => void=} _.onResizeStart
- * @param {() => void=} _.onResizeEnd
- * @param {string=}     _.className
- * @param {any=}        _.style
- * @param {any=}        _.children
+ * @param {{
+    sash: 'top' | 'right' | 'bottom' | 'left'
+    onResizeStart?(): void
+    onResizeEnd?(): void
+    className?: string
+    style?: any
+    children?: any
+  }} props
  */
-export function Resizable({
-  sash,
-  onResizeStart,
-  onResizeEnd,
-  className,
-  style,
-  children,
-}) {
+export function Resizable(props) {
+  const {
+    sash,
+    onResizeStart,
+    onResizeEnd,
+    className,
+    style,
+    children,
+  } = props;
+
   /** @type {{ current?: HTMLElement }} */
   const container$ = useRef();
   const handle$ = useResizable({

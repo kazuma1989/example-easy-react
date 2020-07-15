@@ -8,12 +8,15 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 /**
- * @param {object}  _
- * @param {string=} _.src
- * @param {string=} _.className
- * @param {any=}    _.style
- */
-export function Iframe({ src: loadingSrc, className, style }) {
+  * @param {{
+    src?: string
+    className?: string
+    style?: any
+  }} props
+  */
+export function Iframe(props) {
+  const { src: loadingSrc, className, style } = props;
+
   const [activeSrc, setActiveSrc] = useState("");
   const loading = activeSrc !== loadingSrc;
 
@@ -87,9 +90,11 @@ const clearStyle = (key) => (e) => {
  * @param {{
     className?: string
     style?: any
-  }} _
+  }} props
  */
-function Progress({ className, style }) {
+function Progress(props) {
+  const { className, style } = props;
+
   return html`
     <div
       className=${cx(

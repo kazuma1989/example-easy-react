@@ -19,6 +19,7 @@ const monaco = globalThis.monaco;
     modifiedLang?: string
     options?: {
       fontSize?: number
+      lineNumbers?: any
       lineNumbersMinChars?: number
       scrollBeyondLastLine?: boolean
       renderSideBySide?: string

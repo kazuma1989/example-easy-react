@@ -36,21 +36,15 @@ import { Slide } from "./Slide.js";
 /**
  * @typedef {
     | {
-      type: 'prev'
-    }
-    | {
-      type: 'next'
+      type: 'set-diff-list'
+      payload: {
+        diffList: any[]
+      }
     }
     | {
       type: 'set-index'
       payload: {
         index: number
-      }
-    }
-    | {
-      type: 'set-diff-list'
-      payload: {
-        diffList: any[]
       }
     }
   } Action
@@ -67,26 +61,6 @@ const reducer = produce(
         const { diffList } = action.payload;
 
         draft.diffList = diffList;
-        return;
-      }
-
-      case "prev": {
-        if (draft.currentIndex <= 0) {
-          draft.currentIndex = 0;
-          return;
-        }
-
-        draft.currentIndex -= 1;
-        return;
-      }
-
-      case "next": {
-        if (draft.currentIndex >= draft.diffList.length - 1) {
-          draft.currentIndex = draft.diffList.length - 1;
-          return;
-        }
-
-        draft.currentIndex += 1;
         return;
       }
 
@@ -170,6 +144,7 @@ export function App() {
   const rightGutter = 30;
 
   const [fontSize, setFontSize] = useState(16);
+  const [renderSideBySide, setRenderSideBySide] = useState(true);
 
   return html`
     <div
@@ -178,7 +153,7 @@ export function App() {
           height: 100%;
           display: grid;
           grid-template:
-            "slide title title-spacer" ${titleHeight}px
+            "slide title title" ${titleHeight}px
             "slide diff diff" 1fr
             "slide preview preview-spacer" auto
             / auto 1fr ${rightGutter}px;
@@ -227,10 +202,64 @@ export function App() {
           border-left: solid 1px silver;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
+          padding: 0 8px;
         `}
       >
-        ${title}
+        <button
+          type="button"
+          title=${renderSideBySide
+            ? "インライン表示に切り替える"
+            : "分割表示に切り替える"}
+          onClick=${() => {
+            setRenderSideBySide((v) => !v);
+          }}
+          className=${css`
+            display: flex;
+          `}
+        >
+          ${renderSideBySide ? iconSplitNone : iconSplitVertical}
+        </button>
+
+        <div>${title}</div>
+
+        <div
+          className=${css`
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            > :not(:first-child) {
+              margin-left: 4px;
+            }
+          `}
+        >
+          <button
+            type="button"
+            title="文字を小さくする"
+            onClick=${() => {
+              setFontSize((s) => s - 4);
+            }}
+            className=${css`
+              display: flex;
+            `}
+          >
+            ${iconMinus}
+          </button>
+
+          <button
+            type="button"
+            title="文字を大きくする"
+            onClick=${() => {
+              setFontSize((s) => s + 4);
+            }}
+            className=${css`
+              display: flex;
+            `}
+          >
+            ${iconPlus}
+          </button>
+        </div>
       </div>
 
       <${DiffEditor}
@@ -239,7 +268,10 @@ export function App() {
         modifiedSrc=${modified?.src}
         modifiedLang=${modified?.lang}
         options=${{
+          scrollBeyondLastLine: false,
+          lineNumbers: false,
           fontSize,
+          renderSideBySide,
         }}
         className=${css`
           grid-area: diff;
@@ -306,3 +338,41 @@ export function App() {
     </div>
   `;
 }
+
+const iconMinus = html`
+  <svg
+    viewBox="0 0 100 100"
+    style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
+  >
+    <polyline points="8,50 92,50" />
+  </svg>
+`;
+
+const iconPlus = html`
+  <svg
+    viewBox="0 0 100 100"
+    style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
+  >
+    <polyline points="8,50 92,50" />
+    <polyline points="50,8 50,92" />
+  </svg>
+`;
+
+const iconSplitVertical = html`
+  <svg
+    viewBox="0 0 100 100"
+    style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
+  >
+    <rect x="3" y="3" width="94" height="94" />
+    <polyline points="50,0 50,100" />
+  </svg>
+`;
+
+const iconSplitNone = html`
+  <svg
+    viewBox="0 0 100 100"
+    style="fill: transparent; stroke: currentColor; stroke-width: 6; height: 1em;"
+  >
+    <rect x="3" y="3" width="94" height="94" />
+  </svg>
+`;
