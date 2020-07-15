@@ -5,30 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Visual Diff</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
-
-    <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reveal.css" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/reveal.js/dist/theme/white.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/highlight.js/styles/vs.css"
-    />
-
-    <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-    <script type="module">
-      require.config({
-        paths: {
-          vs: "https://unpkg.com/monaco-editor/min/vs",
-        },
-      });
-
-      require(["vs/editor/editor.main"], () => {
-        import("./index.js");
-      });
-    </script>
+    <script type="module" src="./render.js"></script>
   </head>
 
   <body></body>

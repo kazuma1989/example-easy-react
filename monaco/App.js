@@ -91,7 +91,15 @@ const computed = ({ currentIndex, diffList }) => {
 
 const initialIndex = parseInt(location.hash.slice(1)) || 0;
 
-export function App() {
+/**
+ * @param {{
+    className?: string
+    style?: any
+  }} props
+ */
+export function App(props) {
+  const { className, style } = props;
+
   const [_state, dispatch] = useReducer(reducer, {
     currentIndex: initialIndex,
     diffList: [],
@@ -150,6 +158,9 @@ export function App() {
     <div
       className=${cx(
         css`
+          font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+            "Hiragino Sans", Meiryo, sans-serif;
+
           height: 100%;
           display: grid;
           grid-template:
@@ -164,8 +175,10 @@ export function App() {
           css`
             user-select: none;
             pointer-events: none;
-          `
+          `,
+        className
       )}
+      style=${style}
     >
       <${Resizable}
         sash="right"
