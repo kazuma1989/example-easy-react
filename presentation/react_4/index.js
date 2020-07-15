@@ -13,9 +13,9 @@ function App() {
   ];
 
   return html`
-    <h1>TODO list (React)</h1>
+    <h1>TODO list</h1>
 
-    <div>
+    <p>
       ${todoList.map(
         ({ done, text }, i) => html`
           <label key=${i}>
@@ -24,7 +24,7 @@ function App() {
           </label>
         `
       )}
-    </div>
+    </p>
   `;
 }
 

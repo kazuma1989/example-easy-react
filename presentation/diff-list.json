@@ -117,16 +117,29 @@
     }
   },
   {
-    "title": "index.js",
+    "title": "index.html",
     "original": {
-      "src": "./react_9/index.js",
-      "lang": "javascript",
+      "src": "./react_9/index.html",
+      "lang": "html",
       "preview": "./react_9/"
     },
     "modified": {
+      "src": "./react_10/index.html",
+      "lang": "html",
+      "preview": "./react_10/"
+    }
+  },
+  {
+    "title": "index.js",
+    "original": {
       "src": "./react_10/index.js",
       "lang": "javascript",
       "preview": "./react_10/"
+    },
+    "modified": {
+      "src": "./react_11/index.js",
+      "lang": "javascript",
+      "preview": "./react_11/"
     }
   }
 ]

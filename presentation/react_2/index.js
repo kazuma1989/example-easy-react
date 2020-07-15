@@ -8,12 +8,12 @@ import {
 
 function App() {
   return html`
-    <h1>TODO list (React)</h1>
+    <h1>TODO list</h1>
 
-    <div>
+    <p>
       <label><input type="checkbox" checked /> 洗濯する</label>
       <label><input type="checkbox" /> Slack見る</label>
-    </div>
+    </p>
   `;
 }
 

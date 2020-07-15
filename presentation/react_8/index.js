@@ -8,6 +8,7 @@ import {
 } from "https://cdn.pika.dev/htm/preact/standalone.module.js";
 
 function App() {
+  const [todoText, setTodoText] = useState("");
   const [todoList, setTodoList] = useState([
     { done: true, text: "洗濯する" },
     { done: false, text: "Slack見る" },
@@ -21,8 +22,42 @@ function App() {
     );
   };
 
+  const addTodo = () => {
+    setTodoList((list) => [
+      {
+        done: false,
+        text: todoText,
+      },
+      ...list,
+    ]);
+
+    setTodoText("");
+  };
+
+  const valid = todoText.length >= 1;
+
   return html`
     <h1>TODO list</h1>
+
+    <p>
+      <textarea
+        rows="2"
+        autofocus
+        value=${todoText}
+        onInput=${(e) => setTodoText(e.currentTarget.value)}
+        onKeydown=${(e) => {
+          // Command + Enter のみ処理
+          if (!(e.metaKey && e.code === "Enter")) return;
+          if (!valid) return;
+
+          addTodo();
+        }}
+      ></textarea>
+
+      <button type="button" disabled=${!valid} onClick=${addTodo}>
+        Add
+      </button>
+    </p>
 
     <p>
       ${todoList.map(

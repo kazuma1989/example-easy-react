@@ -13,8 +13,32 @@ function App() {
     { done: false, text: "Slack見る" },
   ]);
 
+  const toggleDone = (index) => {
+    setTodoList((list) =>
+      list.map((todo, i) =>
+        i === index ? { ...todo, done: !todo.done } : todo
+      )
+    );
+  };
+
+  const addTodo = () => {
+    setTodoList((list) => [
+      {
+        done: false,
+        text: "新しいTODO",
+      },
+      ...list,
+    ]);
+  };
+
   return html`
     <h1>TODO list</h1>
+
+    <p>
+      <button type="button" onClick=${addTodo}>
+        Add
+      </button>
+    </p>
 
     <p>
       ${todoList.map(
@@ -24,7 +48,7 @@ function App() {
               type="checkbox"
               checked=${done}
               onChange=${() => {
-                setTodoList((list) => remove(list, i));
+                toggleDone(i);
               }}
             />
             ${" "}${text}
@@ -33,10 +57,6 @@ function App() {
       )}
     </p>
   `;
-}
-
-function remove(list, index) {
-  return list.filter((_, i) => i !== index);
 }
 
 render(html`<${App} />`, document.body);

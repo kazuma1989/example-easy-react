@@ -13,9 +13,9 @@ function App() {
   ];
 
   return html`
-    <h1>TODO list (React)</h1>
+    <h1>TODO list</h1>
 
-    <div>
+    <p>
       <label>
         <input type="checkbox" checked=${todoList[0].done} />
         ${" "}${todoList[0].text}
@@ -25,7 +25,7 @@ function App() {
         <input type="checkbox" checked=${todoList[1].done} />
         ${" "}${todoList[1].text}
       </label>
-    </div>
+    </p>
   `;
 }
 
