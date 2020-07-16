@@ -154,5 +154,31 @@
       "lang": "javascript",
       "preview": "./react_11/"
     }
+  },
+  {
+    "title": "index.js",
+    "original": {
+      "src": "./react_11/index.js",
+      "lang": "javascript",
+      "preview": "./react_11/"
+    },
+    "modified": {
+      "src": "./react_12/index.js",
+      "lang": "javascript",
+      "preview": "./react_12/"
+    }
+  },
+  {
+    "title": "index.js",
+    "original": {
+      "src": "./react_12/index.js",
+      "lang": "javascript",
+      "preview": "./react_12/"
+    },
+    "modified": {
+      "src": "./react_13/index.js",
+      "lang": "javascript",
+      "preview": "./react_13/"
+    }
   }
 ]

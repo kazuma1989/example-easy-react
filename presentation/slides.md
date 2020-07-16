@@ -182,3 +182,19 @@ const strong = css`
 `;
 cx(danger, strong); // -> "css-t7boej css-29la8v"
 ```
+
+---
+
+## (option) コンポーネントを分割する
+
+<code>html\`~\`</code> を返す関数として切り出せば OK。
+
+別のファイルにして import しても OK。
+
+---
+
+## (option) `useState`, `useEffect` を分割する
+
+`useXxx` という名前の関数として切り出せば OK。
+
+別のファイルにして import しても OK。
