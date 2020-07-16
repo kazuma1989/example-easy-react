@@ -42,7 +42,6 @@ function App() {
     <p>
       <textarea
         rows="2"
-        autofocus
         value=${todoText}
         onInput=${(e) => setTodoText(e.currentTarget.value)}
         onKeydown=${(e) => {
