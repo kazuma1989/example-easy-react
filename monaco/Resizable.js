@@ -137,28 +137,28 @@ export function Resizable(props) {
               cursor: row-resize;
               width: 100%;
               height: 4px;
-              top: 0;
+              top: -2px;
             `,
           sash === "right" &&
             css`
               cursor: col-resize;
               width: 4px;
               height: 100%;
-              right: 0;
+              right: -2px;
             `,
           sash === "bottom" &&
             css`
               cursor: row-resize;
               width: 100%;
               height: 4px;
-              bottom: 0;
+              bottom: -2px;
             `,
           sash === "left" &&
             css`
               cursor: col-resize;
               width: 4px;
               height: 100%;
-              left: 0;
+              left: -2px;
             `
         )}
       ></div>

@@ -98,8 +98,10 @@ export function Slide(props) {
 
       // props.indexh の値に保ち続ける
       forced$.current = true;
+      setTimeout(() => {
+        forced$.current = false;
+      }, 50);
       reveal.slide(indexh$.current, v);
-      forced$.current = false;
 
       const next = { h, v };
       onChange$.current?.(next);

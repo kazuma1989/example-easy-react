@@ -148,9 +148,6 @@ export function App(props) {
     };
   }, []);
 
-  const titleHeight = 24;
-  const rightGutter = 30;
-
   const [fontSize, setFontSize] = useState(16);
   const [renderSideBySide, setRenderSideBySide] = useState(true);
 
@@ -164,10 +161,11 @@ export function App(props) {
           height: 100%;
           display: grid;
           grid-template:
-            "slide title title" ${titleHeight}px
+            "slide title title" 24px
             "slide diff diff" 1fr
             "slide preview preview-spacer" auto
-            / auto 1fr ${rightGutter}px;
+            "status status status" 24px
+            / auto 1fr 30px;
           align-items: stretch;
           justify-items: stretch;
         `,
@@ -192,7 +190,7 @@ export function App(props) {
           grid-area: slide;
           width: 50vw;
           min-width: 100px;
-          max-width: calc(100vw - ${rightGutter}px - 100px);
+          max-width: calc(100vw - 200px);
         `}
       >
         <${Slide}
@@ -312,7 +310,7 @@ export function App(props) {
           grid-area: preview;
           height: 20vh;
           min-height: 16px;
-          max-height: calc(100vh - ${titleHeight}px - 16px);
+          max-height: calc(100vh - 50px);
           display: flex;
         `}
       >
@@ -327,7 +325,7 @@ export function App(props) {
           className=${css`
             width: 50%;
             min-width: 100px;
-            max-width: calc(50vw - ${rightGutter}px - 100px);
+            max-width: calc(100% - 100px);
             border-left: solid 1px silver;
           `}
         >
@@ -355,6 +353,24 @@ export function App(props) {
           />
         </div>
       <//>
+
+      <div
+        className=${css`
+          grid-area: status;
+          border-top: solid 1px silver;
+          padding: 0 16px;
+
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 12px;
+        `}
+      >
+        <div></div>
+        <div>
+          ${original?.src}${" ↔ "}${modified?.src}
+        </div>
+      </div>
     </div>
   `;
 }
