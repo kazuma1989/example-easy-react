@@ -7,6 +7,19 @@
       "preview": "./react_0/"
     },
     "modified": {
+      "src": "./react_0/index.html",
+      "lang": "html",
+      "preview": "./react_0/"
+    }
+  },
+  {
+    "title": "index.html",
+    "original": {
+      "src": "./react_0/index.html",
+      "lang": "html",
+      "preview": "./react_0/"
+    },
+    "modified": {
       "src": "./react_1/index.html",
       "lang": "html",
       "preview": "./react_1/"

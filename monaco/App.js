@@ -196,7 +196,7 @@ export function App(props) {
         <${Slide}
           url="./slides.md"
           indexh=${indexh}
-          separatorVertical="==="
+          separatorVertical=${"=\n"}
           options=${{
             // keyboardCondition: "focused",
             controlsLayout: "bottom-right",
